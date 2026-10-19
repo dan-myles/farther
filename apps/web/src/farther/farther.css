@@ -221,6 +221,37 @@
   padding-inline: 4px 0;
 }
 
+/*
+ * Chats aren't nested, so their titles start at the section's edge. A status
+ * opens its slot when it appears, sliding the title over, and closes it again.
+ */
+[data-farther-chats] [data-testid="sidebar-row-slim"] {
+  padding-inline-start: 10px;
+}
+
+[data-farther-chats] [data-testid="sidebar-row-slim"] > span.shrink-0:has(> [data-farther-status]) {
+  width: 12px;
+  overflow: hidden;
+  transition:
+    width 200ms var(--farther-pop-ease),
+    margin-inline-end 200ms var(--farther-pop-ease),
+    opacity 160ms ease-out;
+}
+
+[data-farther-chats]
+  [data-testid="sidebar-row-slim"]
+  > span.shrink-0:has(> [data-farther-status="idle"]) {
+  width: 0;
+  margin-inline-end: -10px;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-farther-chats] [data-testid="sidebar-row-slim"] > span.shrink-0 {
+    transition: none;
+  }
+}
+
 /* Pinned threads already lead their folder, so the pin glyph only costs title space. */
 :is([data-farther-project-threads], [data-farther-chats])
   [data-testid="sidebar-row-slim"]
