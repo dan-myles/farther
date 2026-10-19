@@ -1,3 +1,5 @@
+@import "./composer-timeline.css";
+
 /*
  * Farther's inverted-L frame. The title bar row and the icon rail share the
  * sidebar tone; the thread list and the chat sit on rounded canvases inside it.

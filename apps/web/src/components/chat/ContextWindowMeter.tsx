@@ -48,6 +48,7 @@ export function ContextWindowMeter(props: {
           <Button
             size="icon-sm"
             variant="ghost-muted"
+            data-farther-context-label={`${usedPercentage ?? formatContextWindowTokens(usage.usedTokens)} context`}
             className="size-7"
             aria-label={
               usage.maxTokens !== null && usedPercentage

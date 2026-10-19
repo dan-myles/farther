@@ -53,6 +53,7 @@ type RowContent = {
 function WorkLogLine({ icon, label, trailing, wrapLabel }: RowContent) {
   return (
     <div
+      data-farther-work-line=""
       className={cn(
         "flex min-h-6 min-w-0 gap-1.5 text-sm leading-relaxed select-none [&_*]:select-none",
         wrapLabel ? "items-start" : "items-center",
@@ -150,6 +151,7 @@ export function WorkLogDetails({
   return (
     <div
       ref={scrollerRef}
+      data-farther-work-details={kind}
       onScroll={(event) => {
         const { scrollHeight, scrollTop, clientHeight } = event.currentTarget;
         atLiveEdgeRef.current = scrollHeight - scrollTop - clientHeight <= LIVE_EDGE_PX;

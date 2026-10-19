@@ -247,7 +247,11 @@ export const V2ItemInspector = memo(function V2ItemInspector(props: V2ItemInspec
     sourceItemId: props.projectedItem.sourceItemId,
   });
   return (
-    <div className="space-y-2 text-xs" data-v2-item-inspector={item.type}>
+    <div
+      className="space-y-2 text-xs"
+      data-v2-item-inspector={item.type}
+      data-farther-command-exit={item.type === "command_execution" ? item.exitCode : undefined}
+    >
       {item.type === "reasoning" && item.text ? (
         <div className="rounded-md border border-border/45 bg-muted/15 p-2 italic text-muted-foreground">
           <ChatMarkdown

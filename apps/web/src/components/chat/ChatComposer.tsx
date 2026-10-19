@@ -7174,6 +7174,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
             {isComposerCollapsedMobile || isComposerApprovalState ? null : (
               <div
                 data-chat-composer-footer="true"
+                data-farther-composer-layout={isComposerResting ? "resting" : "expanded"}
                 data-chat-composer-footer-compact={isComposerFooterCompact ? "true" : "false"}
                 className={cn(
                   "flex min-w-0 flex-nowrap items-center justify-between gap-2 overflow-visible px-3 pb-3 sm:px-4 sm:pb-4",
@@ -7235,6 +7236,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                               onPointerDown={(event) => event.preventDefault()}
                               onClick={() => attachmentInputRef.current?.click()}
                               aria-label="Attach files"
+                              data-farther-composer-attach=""
                             />
                           }
                         >
