@@ -57,9 +57,13 @@
   font-family: "Space Mono", var(--font-mono);
 }
 
-/* Threads sit one step in from their project folder. */
-[data-farther-project-threads] [data-testid="sidebar-row-slim"] {
-  padding-inline-start: 1.25rem;
+/*
+ * Thread rows share the folder row's columns: status sits under the folder
+ * icon and the title lines up with the folder name, so nesting reads from
+ * alignment instead of spending width on an indent.
+ */
+:is([data-farther-project-threads], [data-farther-chats]) [data-testid="sidebar-row-slim"] {
+  padding-inline: 10px;
 }
 
 [data-farther-thread-header="project"] nav > ol > li:nth-child(-n + 2) {
@@ -178,6 +182,22 @@
   gap: 8px;
 }
 
+/* The time column hugs its label so a PR icon sits right beside it. */
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  > span.ml-auto:last-of-type {
+  min-width: 24px;
+  margin-inline-start: -2px;
+  justify-content: flex-start;
+}
+
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  > span.ml-auto:last-of-type
+  > button {
+  padding-inline: 5px;
+}
+
 /* Pinned threads already lead their folder, so the pin glyph only costs title space. */
 :is([data-farther-project-threads], [data-farther-chats])
   [data-testid="sidebar-row-slim"]
@@ -211,6 +231,9 @@
 }
 
 [data-farther-scroll] {
+  /* Pushes the scrollbar into the panel's edge gutter, clear of the row ends. */
+  margin-inline-end: -6px;
+  padding-inline-end: 6px;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   mask-image: linear-gradient(

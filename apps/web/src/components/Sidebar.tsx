@@ -70,6 +70,7 @@ import {
   AlarmClockIcon,
   AlarmClockOffIcon,
   ArrowRightLeftIcon,
+  ArchiveIcon,
   CheckIcon,
   CircleAlertIcon,
   CircleCheckIcon,
@@ -186,6 +187,7 @@ import {
   useFartherGroupedRow,
 } from "../farther/FartherProjectGroups";
 import { groupSidebarThreadsByProject } from "../farther/projectGroups";
+import { useFartherArchiveThread } from "../farther/useFartherArchiveThread";
 import { FartherWorkspaceSwitcher } from "../farther/FartherWorkspaceControls";
 import { fartherWorkspaceMenu, isFartherWorkspaceMenuId } from "../farther/fartherWorkspaceMenu";
 import {
@@ -2249,7 +2251,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                 ) : (
                   <button
                     type="button"
-                    aria-label="Settle thread"
+                    aria-label={fartherGroupedRow ? "Archive thread" : "Settle thread"}
                     onClick={handleSettleClick}
                     onPointerDown={handleActionPointerDown}
                     className={cn(
@@ -2257,7 +2259,11 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                       isWoke && "group-any-hover/sidebar-row:static",
                     )}
                   >
-                    <CheckIcon className="size-3" />
+                    {fartherGroupedRow ? (
+                      <ArchiveIcon className="size-3.5" />
+                    ) : (
+                      <CheckIcon className="size-3" />
+                    )}
                   </button>
                 )}
               </span>
@@ -2850,6 +2856,7 @@ export default function Sidebar() {
   const fartherProjects = useFartherCollapsedProjects();
   const fartherWorkspaces = useFartherWorkspaces();
   const fartherThreadItem = useFartherThreadItem();
+  const fartherArchive = useFartherArchiveThread();
   const fartherThreadFilter = useFartherWorkspaceThreadFilter();
   const [renamingTitle, setRenamingTitle] = useState("");
   const settlingThreadKeysRef = useRef(new Set<string>());
@@ -4795,7 +4802,8 @@ export default function Sidebar() {
           {!isSearchingThreads ? (
             <TooltipProvider
               key="sidebar-thread-tooltips-150"
-              delay={150}
+              // Farther: thread cards wait for a settled pointer instead of flashing on pass-over.
+              delay={500}
               closeDelay={0}
               timeout={400}
             >
@@ -4924,7 +4932,7 @@ export default function Sidebar() {
                             isRenaming={renamingThreadKey === threadKey}
                             renamingTitle={renamingThreadKey === threadKey ? renamingTitle : ""}
                             onContextMenu={handleThreadContextMenu}
-                            onSettle={attemptSettle}
+                            onSettle={grouped ? (ref) => void fartherArchive(ref) : attemptSettle}
                             onActionSweepStart={startActionSweep}
                             onUnsettle={attemptUnsettle}
                             onSnooze={attemptSnooze}
