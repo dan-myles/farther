@@ -185,6 +185,13 @@ import {
   useFartherGroupedRow,
 } from "../farther/FartherProjectGroups";
 import { groupSidebarThreadsByProject } from "../farther/projectGroups";
+import { FartherWorkspaceSwitcher } from "../farther/FartherWorkspaceControls";
+import { fartherWorkspaceMenu, isFartherWorkspaceMenuId } from "../farther/fartherWorkspaceMenu";
+import {
+  useFartherThreadItem,
+  useFartherWorkspaceThreadFilter,
+  useFartherWorkspaces,
+} from "../farther/useFartherWorkspaces";
 import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
 import { cn } from "~/lib/utils";
 import { EnvironmentMachineIcon } from "./EnvironmentMachineIcon";
@@ -393,6 +400,7 @@ interface SidebarThreadPartitionInput {
   readonly serverConfigs: ReadonlyMap<EnvironmentId, EnvironmentServerConfig>;
   readonly optimisticDrop: SidebarOptimisticDrop | null;
   readonly workingShelfEnabled: boolean;
+  readonly fartherThreadFilter: (thread: EnvironmentThreadShell) => boolean;
   // Snooze wakes and the queued-turn grace depend on the clock, so the minute
   // tick and the precise snooze-wake tick are inputs: a new key repartitions.
   readonly clockKey: string;
@@ -459,6 +467,7 @@ function useSidebarThreads(input: {
   const { projectScopeKey, scopedProjectKeys, serverConfigs, optimisticDrop, routeThreadKey } =
     input;
   const threads = useThreadShells();
+  const fartherThreadFilter = useFartherWorkspaceThreadFilter();
   const workingShelfEnabled = useClientSettings((s) => s.sidebarWorkingShelfEnabled);
   const nowMinute = useNowMinute();
   // Snooze wake times are second-precise, so classifying with the quantized
@@ -501,6 +510,7 @@ function useSidebarThreads(input: {
     serverConfigs,
     optimisticDrop,
     workingShelfEnabled,
+    fartherThreadFilter,
     clockKey: `${nowMinute}:${snoozeWakeTick}`,
   });
   const partitionNextWakeAt = partition.snoozedThreads[0]?.snoozedUntil ?? null;
@@ -591,7 +601,9 @@ function useSidebarThreads(input: {
 function partitionSidebarThreads(input: SidebarThreadPartitionInput) {
   const { threads, scopedProjectKeys, serverConfigs, optimisticDrop, workingShelfEnabled } = input;
   const preciseNow = new Date().toISOString();
-  const visible = filterSidebarV2VisibleThreads(threads, scopedProjectKeys);
+  const visible = filterSidebarV2VisibleThreads(threads, scopedProjectKeys).filter(
+    input.fartherThreadFilter,
+  );
   inboxReturns.observe(workingShelfEnabled ? threads : null);
   const pinned: EnvironmentThreadShell[] = [];
   const active: EnvironmentThreadShell[] = [];
@@ -1425,6 +1437,7 @@ const SidebarDraftBlock = memo(function SidebarDraftBlock(props: {
 }) {
   const draftThreadsByThreadKey = useComposerDraftStore((store) => store.draftThreadsByThreadKey);
   const draftsByThreadKey = useComposerDraftStore((store) => store.draftsByThreadKey);
+  const fartherThreadFilter = useFartherWorkspaceThreadFilter();
   const [frozenActive, setFrozenActive] = useState<{
     routeDraftId: string | null;
     row: SidebarDraftRowData | null;
@@ -1448,6 +1461,7 @@ const SidebarDraftBlock = memo(function SidebarDraftBlock(props: {
       if (session.promotedTo != null) {
         continue;
       }
+      if (!fartherThreadFilter({ ...session, id: session.threadId })) continue;
       if (
         props.scopedProjectKeys !== null &&
         !props.scopedProjectKeys.has(`${session.environmentId}:${session.projectId}`)
@@ -2833,6 +2847,9 @@ export default function Sidebar() {
   const clearPendingFileDrop = useSidebarPendingFileDropStore((s) => s.clearPendingFileDrop);
   const [renamingThreadKey, setRenamingThreadKey] = useState<string | null>(null);
   const fartherProjects = useFartherCollapsedProjects();
+  const fartherWorkspaces = useFartherWorkspaces();
+  const fartherThreadItem = useFartherThreadItem();
+  const fartherThreadFilter = useFartherWorkspaceThreadFilter();
   const [renamingTitle, setRenamingTitle] = useState("");
   const settlingThreadKeysRef = useRef(new Set<string>());
   const threadListRef = useRef<HTMLUListElement | null>(null);
@@ -2936,6 +2953,7 @@ export default function Sidebar() {
       if (!composerDraftHasUserContent(store.draftsByThreadKey[draftKey])) {
         continue;
       }
+      if (!fartherThreadFilter({ ...session, id: session.threadId })) continue;
       if (
         scopedProjectKeys !== null &&
         !scopedProjectKeys.has(`${session.environmentId}:${session.projectId}`)
@@ -4229,40 +4247,45 @@ export default function Sidebar() {
                 projectRef.projectId === thread.projectId,
             ),
           ) ?? null;
+        const fartherMove = fartherWorkspaceMenu(fartherWorkspaces, [fartherThreadItem(thread)]);
         const clicked = await settlePromise(() =>
           api.contextMenu.show(
-            buildThreadActionMenuItems({
-              canOperate: readEnvironmentScope(
-                threadRef.environmentId,
-                AuthOrchestrationOperateScope,
-              ),
-              branch: thread.branch ?? null,
-              projectFilter: threadProjectGroup
-                ? {
-                    label: threadProjectGroup.displayName,
-                    isActive: projectScopeKey === threadProjectGroup.projectKey,
-                  }
-                : null,
-              isPinned,
-              isSettled,
-              autoSettleEnabled: thread.autoSettleDisabledAt == null,
-              isSnoozed,
-              canSnoozeNow: canSnooze(thread, { now: new Date().toISOString() }),
-              isRegeneratingTitle,
-              isRunning: !threadRuntimeCanArchive(thread.runtime),
-              supports: {
-                settlement: supportsSettlement,
-                autoSettleOptOut: supportsAutoSettleOptOut,
-                snooze: supportsSnooze,
-                pinning: supportsPinning,
-                titleRegeneration: supportsTitleRegeneration,
-              },
-              snoozePresets,
-            }),
+            [
+              ...buildThreadActionMenuItems({
+                canOperate: readEnvironmentScope(
+                  threadRef.environmentId,
+                  AuthOrchestrationOperateScope,
+                ),
+                branch: thread.branch ?? null,
+                projectFilter: threadProjectGroup
+                  ? {
+                      label: threadProjectGroup.displayName,
+                      isActive: projectScopeKey === threadProjectGroup.projectKey,
+                    }
+                  : null,
+                isPinned,
+                isSettled,
+                autoSettleEnabled: thread.autoSettleDisabledAt == null,
+                isSnoozed,
+                canSnoozeNow: canSnooze(thread, { now: new Date().toISOString() }),
+                isRegeneratingTitle,
+                isRunning: !threadRuntimeCanArchive(thread.runtime),
+                supports: {
+                  settlement: supportsSettlement,
+                  autoSettleOptOut: supportsAutoSettleOptOut,
+                  snooze: supportsSnooze,
+                  pinning: supportsPinning,
+                  titleRegeneration: supportsTitleRegeneration,
+                },
+                snoozePresets,
+              }),
+              ...fartherMove.items,
+            ],
             position,
           ),
         );
         if (clicked._tag === "Failure" || clicked.value === null) return;
+        if (isFartherWorkspaceMenuId(clicked.value)) return fartherMove.choose(clicked.value);
         if (threadActionRequiresOperate(clicked.value) && !checkThreadOperations([thread])) return;
         if (clicked.value?.startsWith("snooze:")) {
           const preset =
@@ -4550,6 +4573,7 @@ export default function Sidebar() {
         className="min-h-full"
         fixedHeader={
           <SidebarGroup className="z-[1]">
+            <FartherWorkspaceSwitcher />
             <SidebarThreadHeader
               searchFieldRef={headerSearchRef}
               hasProjects={projectGroups.length > 0}
@@ -4957,6 +4981,21 @@ export default function Sidebar() {
                           collapsed: fartherProjects.collapsed,
                           onToggleProject: fartherProjects.toggle,
                           onAddProject: openAddProjectCommandPalette,
+                          onFolderContextMenu: (rows, position) => {
+                            const menu = fartherWorkspaceMenu(fartherWorkspaces, [
+                              ...new Map(
+                                rows.map(({ thread }) => {
+                                  const item = fartherThreadItem(thread);
+                                  return [item.key, item] as const;
+                                }),
+                              ).values(),
+                            ]);
+                            const api = readLocalApi();
+                            if (!api || menu.items.length === 0) return;
+                            void api.contextMenu
+                              .show(menu.items, position)
+                              .then((clicked) => clicked && menu.choose(clicked));
+                          },
                           renderRow: ({ thread, section }) =>
                             renderThreadRow(thread, section, true),
                         }),

@@ -57,9 +57,11 @@ export function renderFartherProjectGroups<Thread>(input: {
   collapsed: ReadonlySet<string>;
   onToggleProject: (key: string) => void;
   onAddProject: () => void;
+  onFolderContextMenu: (threads: ReadonlyArray<Thread>, position: { x: number; y: number }) => void;
   renderRow: (thread: Thread) => ReactNode;
 }): ReactNode[] {
-  const { groups, collapsed, onToggleProject, onAddProject, renderRow } = input;
+  const { groups, collapsed, onToggleProject, onAddProject, onFolderContextMenu, renderRow } =
+    input;
   const items: ReactNode[] = [];
   if (groups.projects.length > 0) {
     items.push(
@@ -87,6 +89,10 @@ export function renderFartherProjectGroups<Thread>(input: {
           type="button"
           aria-expanded={!isCollapsed}
           onClick={() => onToggleProject(group.key)}
+          onContextMenu={(event) => {
+            event.preventDefault();
+            onFolderContextMenu(group.threads, { x: event.clientX, y: event.clientY });
+          }}
           data-farther-project-row=""
           className="flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-sm font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring"
         >
