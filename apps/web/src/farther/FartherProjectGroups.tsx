@@ -97,7 +97,7 @@ function SectionLabel({ label, action }: { label: string; action?: ReactNode }) 
   return (
     <li
       data-farther-section-label={label.toLowerCase()}
-      className="flex h-[29px] list-none items-center justify-between px-2.5 pt-1.5 font-medium text-sidebar-muted-foreground"
+      className="flex h-[26px] list-none items-center justify-between px-2.5 text-xs leading-[17px] font-medium text-sidebar-muted-foreground"
     >
       <span>{label}</span>
       {action}
@@ -125,7 +125,7 @@ export function renderFartherProjectGroups<Thread>(input: {
           type="button"
           aria-label="Add project"
           onClick={onAddProject}
-          className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
+          className="-mr-1 flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
         >
           <PlusIcon className="size-3.5" />
         </button>
@@ -146,9 +146,9 @@ export function renderFartherProjectGroups<Thread>(input: {
             onFolderContextMenu(group.threads, { x: event.clientX, y: event.clientY });
           }}
           data-farther-project-row=""
-          className="flex h-[31px] w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-[13px] leading-[19px] font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="flex h-[30px] w-full cursor-pointer items-center gap-[9px] rounded-[7px] px-2.5 text-left text-[13px] leading-[19px] font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
-          <FolderIcon aria-hidden className="size-4 shrink-0 text-sidebar-muted-foreground" />
+          <FolderIcon aria-hidden className="size-[15px] shrink-0 text-sidebar-foreground/80" />
           <span className="min-w-0 flex-1 truncate">{group.label}</span>
           {isCollapsed ? (
             <span className="text-xs font-normal text-sidebar-muted-foreground tabular-nums">
@@ -158,7 +158,7 @@ export function renderFartherProjectGroups<Thread>(input: {
           <ChevronDownIcon
             aria-hidden
             className={cn(
-              "size-3.5 shrink-0 text-sidebar-muted-foreground transition-transform duration-150 ease-out motion-reduce:transition-none",
+              "size-3 shrink-0 text-sidebar-muted-foreground transition-transform duration-150 ease-out motion-reduce:transition-none",
               isCollapsed && "-rotate-90",
             )}
           />
@@ -236,7 +236,7 @@ function FartherNewChatButton() {
       }
       disabled={environmentId === null}
       onClick={() => environmentId !== null && void startScratchThread(environmentId)}
-      className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground disabled:cursor-default disabled:opacity-45 disabled:hover:bg-transparent"
+      className="-mr-1 flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground disabled:cursor-default disabled:opacity-45 disabled:hover:bg-transparent"
     >
       <PlusIcon className="size-3.5" />
     </button>
@@ -252,7 +252,7 @@ export function FartherStatusMarker({
     <span
       aria-hidden
       data-farther-status={status ?? "idle"}
-      className="flex size-4 shrink-0 items-center justify-center"
+      className="flex size-3 shrink-0 items-center justify-center"
     >
       {status === "working" ? (
         <span className="size-2.5 -rotate-45 rounded-full border-[1.5px] border-sidebar-muted-foreground/30 border-t-sidebar-foreground border-r-sidebar-foreground" />

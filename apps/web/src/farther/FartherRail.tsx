@@ -33,7 +33,7 @@ function RailButton({
             onClick={onClick}
             data-farther-rail-button=""
             className={cn(
-              "flex size-9 items-center justify-center rounded-lg text-sidebar-muted-foreground outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-[18px]",
+              "flex size-9 items-center justify-center rounded-lg text-sidebar-foreground/80 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-[18px]",
               placeholder
                 ? "cursor-default opacity-45"
                 : "cursor-pointer hover:bg-sidebar-row-hover hover:text-sidebar-foreground",

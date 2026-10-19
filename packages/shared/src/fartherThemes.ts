@@ -78,7 +78,7 @@ export const TOKYO_NIGHT_THEME: ThemeDefinition = {
     searchMatchActiveForeground: TOKYO_NIGHT.bgDark,
     sidebar: TOKYO_NIGHT.bgDark,
     sidebarForeground: TOKYO_NIGHT.fg,
-    sidebarMutedForeground: TOKYO_NIGHT.muted,
+    sidebarMutedForeground: TOKYO_NIGHT.comment,
     sidebarControlSurface: TOKYO_NIGHT.surface,
     sidebarRowHover: "#1f2233",
     sidebarRowActive: TOKYO_NIGHT.selection,
