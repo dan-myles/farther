@@ -41,6 +41,7 @@ export function fartherThreadOrder(thread: EnvironmentThreadShell) {
 function trackScrollEdges(list: HTMLElement | null) {
   if (!list) return;
   const update = () => {
+    list.style.setProperty("--farther-scrollbar", `${list.offsetWidth - list.clientWidth}px`);
     list.toggleAttribute("data-more-above", list.scrollTop > 1);
     list.toggleAttribute(
       "data-more-below",
@@ -95,8 +96,8 @@ export function useFartherCollapsedProjects() {
 function SectionLabel({ label, action }: { label: string; action?: ReactNode }) {
   return (
     <li
-      data-farther-section-label=""
-      className="flex h-[29px] list-none items-center justify-between px-2.5 pt-1.5 text-xs leading-[17px] font-medium text-sidebar-muted-foreground"
+      data-farther-section-label={label.toLowerCase()}
+      className="flex h-[29px] list-none items-center justify-between px-2.5 pt-1.5 font-medium text-sidebar-muted-foreground"
     >
       <span>{label}</span>
       {action}

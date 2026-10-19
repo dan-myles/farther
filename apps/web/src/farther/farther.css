@@ -96,8 +96,11 @@
   flex-direction: row;
   align-items: center;
   gap: 4px;
-  /* Same inset as the list's section labels and their + buttons below. */
-  padding-inline: 18px;
+  /*
+   * The workspace name sits a step left of the list it heads; the icons end on
+   * the list's action column (+ buttons, archive, chevrons).
+   */
+  padding-inline: 14px 17px;
   /* Paper sits the workspace name ~30px under the canvas edge. */
   padding-block: 16px 8px;
 }
@@ -202,7 +205,7 @@
   [data-testid="sidebar-row-slim"]
   > span.ml-auto:last-of-type
   > button {
-  padding-inline: 3px 0;
+  padding-inline: 3px;
 }
 
 /* Pinned threads already lead their folder, so the pin glyph only costs title space. */
@@ -238,9 +241,14 @@
 }
 
 [data-farther-scroll] {
-  /* Pushes the scrollbar into the panel's edge gutter, clear of the row ends. */
-  margin-inline-end: -6px;
-  padding-inline-end: 6px;
+  /*
+   * The scrollbar lives in the panel's edge gutter, so rows end at the same x
+   * whether scrollbars overlay (0px) or take space (--farther-scrollbar, set
+   * from script). Both lists reserve the gutter so Projects and Chats match.
+   */
+  scrollbar-gutter: stable;
+  margin-inline-end: -8px;
+  padding-inline-end: max(0px, 8px - var(--farther-scrollbar, 0px));
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   mask-image: linear-gradient(
@@ -265,4 +273,36 @@
 
 [data-farther-scroll]:hover {
   scrollbar-color: color-mix(in srgb, var(--foreground) 18%, transparent) transparent;
+}
+
+/* Projects and Chats read as separate sections, like the labels in ChatGPT's sidebar. */
+[data-farther-section-label] {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+[data-farther-section-label="chats"] {
+  margin-top: 14px;
+}
+
+/*
+ * A folder's row stays pinned while its threads scroll under it. The pinned row
+ * covers the top edge, so the projects list skips its top fade.
+ */
+@layer base {
+  [data-farther-project-row] {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--sidebar);
+  }
+}
+
+[data-farther-projects-scroll][data-more-above] {
+  --farther-fade-top: 0px;
+}
+
+/* Chevrons share the action column's center with the + buttons and archive. */
+[data-farther-project-row] > svg:last-of-type {
+  margin-inline-end: 3px;
 }
