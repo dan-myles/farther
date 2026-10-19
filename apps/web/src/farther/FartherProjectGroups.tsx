@@ -47,7 +47,7 @@ function SectionLabel({ label, action }: { label: string; action?: ReactNode }) 
   return (
     <li
       data-farther-section-label=""
-      className="flex h-7 list-none items-center justify-between px-2.5 pt-2 text-xs font-medium text-sidebar-muted-foreground"
+      className="flex h-[29px] list-none items-center justify-between px-2.5 pt-1.5 text-xs leading-[17px] font-medium text-sidebar-muted-foreground"
     >
       <span>{label}</span>
       {action}
@@ -95,7 +95,7 @@ export function renderFartherProjectGroups<Thread>(input: {
             onFolderContextMenu(group.threads, { x: event.clientX, y: event.clientY });
           }}
           data-farther-project-row=""
-          className="flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-sm font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-[31px] w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-[13px] leading-[19px] font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring"
         >
           <FolderIcon aria-hidden className="size-4 shrink-0 text-sidebar-muted-foreground" />
           <span className="min-w-0 flex-1 truncate">{group.label}</span>
@@ -139,13 +139,18 @@ function FartherNewChatButton() {
   const primaryEnvironmentId = usePrimaryEnvironmentId();
   const { scratchEnvironmentId, startScratchThread } = useScratchProject();
   const environmentId = scratchEnvironmentId(primaryEnvironmentId);
-  if (environmentId === null) return null;
   return (
     <button
       type="button"
       aria-label="New chat"
-      onClick={() => void startScratchThread(environmentId)}
-      className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
+      title={
+        environmentId === null
+          ? "This server can't start chats without a project while its data folder is inside a git checkout."
+          : undefined
+      }
+      disabled={environmentId === null}
+      onClick={() => environmentId !== null && void startScratchThread(environmentId)}
+      className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground disabled:cursor-default disabled:opacity-45 disabled:hover:bg-transparent"
     >
       <PlusIcon className="size-3.5" />
     </button>

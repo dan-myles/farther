@@ -125,11 +125,11 @@ export function FartherWorkspaceSwitcher() {
             <button
               type="button"
               data-farther-workspace-switcher=""
-              className="flex min-w-0 cursor-pointer items-center gap-1.5 rounded-md px-1 text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex min-w-0 cursor-pointer items-center gap-1.5 rounded-md text-sidebar-foreground outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             />
           }
         >
-          <span className="truncate text-[15px] leading-[22px] font-medium tracking-[-0.01em]">
+          <span className="truncate text-[17px] leading-[22px] tracking-[-0.02em]">
             {active.name}
           </span>
           <ChevronDownIcon aria-hidden className="size-3 shrink-0 text-sidebar-muted-foreground" />

@@ -148,3 +148,44 @@
   [data-sidebar-control] {
   left: calc(var(--sidebar-width) - 40px);
 }
+
+/* The chat canvas draws its own left edge from the tab down; upstream's container border would run to the top. */
+[data-slot="sidebar-container"]:has([data-farther-sidebar]) {
+  border-right: 0;
+}
+
+/* Fixed width per Paper: 56px rail + 264px list. */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
+  --sidebar-width: 320px !important;
+}
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar="rail"] {
+  display: none;
+}
+
+/* Paper's list type: 13px rows on a 31px rhythm. */
+:is([data-farther-project-threads], [data-farther-chats]) > li {
+  contain-intrinsic-size: auto 31px;
+}
+
+:is([data-farther-project-threads], [data-farther-chats]) [data-testid="sidebar-row-slim"] {
+  min-height: 31px;
+  height: 31px;
+  padding-block: 0;
+}
+
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  > span.text-sm {
+  font-size: 13px;
+  line-height: 19px;
+}
+
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  .tabular-nums
+  > .text-xs {
+  font-family: "Space Mono", var(--font-mono);
+  font-size: 11px;
+  letter-spacing: -0.02em;
+}
