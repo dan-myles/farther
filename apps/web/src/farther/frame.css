@@ -9,7 +9,6 @@
  */
 
 [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
-  --sidebar-width: 320px !important;
   --farther-rail-width: 56px;
   --farther-tab-inset: 8px;
   --farther-radius: 12px;
@@ -37,12 +36,17 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   border-right: 0;
 }
 
-/* The inner layout keeps its full width and is clipped, so rows never reflow mid-slide. */
+/*
+ * The inner layout keeps its full width and is clipped, so rows never reflow
+ * mid-slide. It also follows the container, which a resize drag widens before
+ * it commits --sidebar-width.
+ */
 [data-farther-sidebar] {
-  width: var(--sidebar-width);
+  width: max(100%, var(--sidebar-width));
 }
 
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar="rail"] {
+/* The resize handle only exists while the list is open; collapsed, the rail is fixed. */
+[data-slot="sidebar"][data-state="collapsed"]:has([data-farther-sidebar]) [data-sidebar="rail"] {
   display: none;
 }
 

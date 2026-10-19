@@ -57,6 +57,7 @@ import {
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 import { useThreadRouteRef } from "../hooks/useThreadRouteTarget";
 import { FartherSidebarShell } from "../farther/FartherSidebarShell";
+import { fartherSidebarMaximumWidth, fartherSidebarMinimumWidth } from "../farther/sidebarWidth";
 
 const MACOS_TRAFFIC_LIGHTS_LEFT_INSET = "var(--desktop-window-controls-inset, 90px)";
 
@@ -271,8 +272,13 @@ export function AppSidebarLayout({ children }: { children: ReactNode }) {
   // that would otherwise refresh a render-time snapshot.
   const viewportWidth = useSyncExternalStore(subscribeToViewportWidth, readViewportWidth);
   const [brandWidth, setBrandWidth] = useState(0);
-  const sidebarMinimumWidth = resolveThreadSidebarMinimumWidth(brandWidth);
-  const sidebarMaximumWidth = resolveThreadSidebarMaximumWidth(viewportWidth, sidebarMinimumWidth);
+  const sidebarMinimumWidth = fartherSidebarMinimumWidth(
+    resolveThreadSidebarMinimumWidth(brandWidth),
+  );
+  const sidebarMaximumWidth = fartherSidebarMaximumWidth(
+    resolveThreadSidebarMaximumWidth(viewportWidth, sidebarMinimumWidth),
+    sidebarMinimumWidth,
+  );
   const resetSidebarWidth = () => {
     try {
       removeLocalStorageItem(THREAD_SIDEBAR_WIDTH_STORAGE_KEY);

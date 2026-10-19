@@ -142,10 +142,10 @@
 }
 
 /*
- * Paper's thread rows: 30px, a 12px status slot, 10px gaps. Project threads sit
- * one indent in from their folder; chats start at the section's edge. The time
- * ends the row, colored when the thread needs the user, and the archive action
- * takes its place on hover.
+ * Paper's thread rows: 30px, a 12px status slot, 10px gaps. The status slot sits
+ * under the folder icon and titles line up with the folder name, in projects and
+ * chats alike. The time ends the row, colored when the thread needs the user,
+ * and the archive action takes its place on hover.
  */
 :is([data-farther-project-threads], [data-farther-chats]) > li {
   contain-intrinsic-size: auto 30px;
@@ -156,12 +156,8 @@
   height: 30px;
   gap: 10px;
   padding-block: 0;
-  padding-inline: 26px 10px;
+  padding-inline: 12px 10px;
   border-radius: 7px;
-}
-
-[data-farther-chats] [data-testid="sidebar-row-slim"] {
-  padding-inline-start: 10px;
 }
 
 :is([data-farther-project-threads], [data-farther-chats])

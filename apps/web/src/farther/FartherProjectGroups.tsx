@@ -150,11 +150,6 @@ export function renderFartherProjectGroups<Thread>(input: {
         >
           <FolderIcon aria-hidden className="size-[15px] shrink-0 text-sidebar-foreground/80" />
           <span className="min-w-0 flex-1 truncate">{group.label}</span>
-          {isCollapsed ? (
-            <span className="text-xs font-normal text-sidebar-muted-foreground tabular-nums">
-              {group.threads.length}
-            </span>
-          ) : null}
           <ChevronDownIcon
             aria-hidden
             className={cn(
