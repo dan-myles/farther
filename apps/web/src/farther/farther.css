@@ -89,7 +89,8 @@
   gap: 4px;
   /* Same inset as the list's section labels and their + buttons below. */
   padding-inline: 18px;
-  padding-top: 6px;
+  /* Paper sits the workspace name ~30px under the canvas edge. */
+  padding-block: 16px 8px;
 }
 
 [data-farther-sidebar] :has(> [data-farther-workspace-switcher]) > div:last-child button {
