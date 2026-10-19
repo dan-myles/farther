@@ -15,7 +15,8 @@
 }
 
 [data-thread-details-panel="popover"] [data-farther-env-card] {
-  width: min(320px, calc(100vw - 24px));
+  --thread-details-panel-width: 100%;
+  width: 100%;
   border-radius: 12px;
 }
 
