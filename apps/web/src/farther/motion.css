@@ -1,0 +1,95 @@
+/*
+ * Farther's micro-motion: short, one-shot transitions on state changes. Nothing
+ * animates at rest, and everything collapses to instant under reduced motion.
+ */
+
+:root {
+  --farther-pop-ease: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+/* Floating surfaces upstream mounts without an enter/exit: scale from their anchor and fade. */
+:is(
+  [data-slot="menu-popup"],
+  [data-slot="select-popup"],
+  [data-slot="combobox-popup"],
+  [data-slot="autocomplete-popup"]
+) {
+  transition:
+    opacity 140ms ease-out,
+    scale 160ms var(--farther-pop-ease);
+}
+
+:is(
+  [data-slot="menu-popup"],
+  [data-slot="select-popup"],
+  [data-slot="combobox-popup"],
+  [data-slot="autocomplete-popup"]
+):is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+  scale: 0.96;
+}
+
+[data-slot="tooltip-popup"] {
+  transition: opacity 100ms ease-out;
+}
+
+[data-slot="tooltip-popup"]:is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+}
+
+:is([data-slot="dialog-popup"], [data-slot="alert-dialog-popup"]) {
+  transition:
+    opacity 160ms ease-out,
+    scale 180ms var(--farther-pop-ease);
+}
+
+:is([data-slot="dialog-popup"], [data-slot="alert-dialog-popup"]):is(
+  [data-starting-style],
+  [data-ending-style]
+) {
+  opacity: 0;
+  scale: 0.97;
+}
+
+/* Sidebar: hover fills fade in, presses give a little. */
+[data-farther-sidebar] :is(button, [role="button"], a) {
+  transition:
+    background-color 120ms ease-out,
+    color 120ms ease-out,
+    opacity 120ms ease-out,
+    scale 100ms ease-out;
+}
+
+[data-farther-sidebar]
+  :is(
+    [data-farther-rail-button],
+    [data-farther-project-row],
+    [data-farther-workspace-switcher]
+  ):active:not([aria-disabled="true"]) {
+  scale: 0.97;
+}
+
+/* The workspace switcher's chevron turns while its menu is open. */
+[data-farther-workspace-switcher] svg {
+  transition: rotate 160ms var(--farther-pop-ease);
+}
+
+[data-farther-workspace-switcher][data-popup-open] svg {
+  rotate: 180deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    [data-slot="menu-popup"],
+    [data-slot="select-popup"],
+    [data-slot="combobox-popup"],
+    [data-slot="autocomplete-popup"],
+    [data-slot="tooltip-popup"],
+    [data-slot="dialog-popup"],
+    [data-slot="alert-dialog-popup"]
+  ),
+  [data-farther-sidebar] :is(button, [role="button"], a),
+  [data-farther-workspace-switcher] svg {
+    transition: none;
+  }
+}

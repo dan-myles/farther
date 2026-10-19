@@ -1,6 +1,7 @@
 @import "./composer-timeline.css";
 @import "./env-panel.css";
 @import "./frame.css";
+@import "./motion.css";
 
 /*
  * Farther's inverted-L frame. The title bar row and the icon rail share the
@@ -113,7 +114,9 @@
   > div:first-child {
   flex: 0 0 auto;
   width: 22px;
+  height: 22px;
   padding-inline: 3.5px;
+  border-radius: 6px;
   overflow: hidden;
 }
 

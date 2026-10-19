@@ -320,3 +320,26 @@
     opacity: 1;
   }
 }
+
+/* One hover for every row: upstream controls bring different fills (a neutral white wash, raised surface). */
+[data-farther-env-card]
+  :is(
+    [data-farther-env-control],
+    [data-composer-context-control],
+    [data-farther-env-row],
+    [role="combobox"]
+  ) {
+  transition:
+    background-color 120ms ease-out,
+    color 120ms ease-out;
+}
+
+[data-farther-env-card]
+  :is(
+    [data-farther-env-control],
+    [data-composer-context-control],
+    [data-farther-env-row],
+    [role="combobox"]
+  ):is(:hover, [data-popup-open]):not(:disabled, [aria-disabled="true"]) {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
