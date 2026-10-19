@@ -1,0 +1,71 @@
+/*
+ * Farther's inverted-L frame. The title bar row and the icon rail share the
+ * sidebar tone; the thread list and the chat sit on rounded canvases inside it.
+ * Everything is scoped to farther-owned data attributes so upstream markup
+ * changes surface as visual regressions here instead of merge conflicts.
+ */
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
+  background: var(--sidebar);
+}
+
+[data-farther-sidebar] {
+  --farther-canvas-radius: 12px;
+  --farther-tab-inset: 8px;
+}
+
+/* Thread list canvas: starts under the title bar, rounded where it meets the rail. */
+[data-farther-sidebar-panel] {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-farther-sidebar-panel]::before {
+  content: "";
+  position: absolute;
+  inset: var(--workspace-topbar-height) 0 0 0;
+  z-index: -1;
+  border-top: 1px solid var(--sidebar-border);
+  border-left: 1px solid var(--sidebar-border);
+  border-top-left-radius: var(--farther-canvas-radius);
+  background: var(--sidebar);
+}
+
+[data-slot="sidebar-inner"]:has([data-farther-sidebar]) {
+  border-right: 0;
+}
+
+/* Chat canvas: rises into the title bar so the thread header reads as its tab. */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) > main[data-slot="sidebar-inset"] {
+  margin-top: var(--farther-tab-inset, 8px);
+  border-top: 1px solid var(--sidebar-border);
+  border-left: 1px solid var(--sidebar-border);
+  border-top-left-radius: 12px;
+  overflow: hidden;
+}
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
+  height: calc(var(--workspace-topbar-height) - var(--farther-tab-inset, 8px));
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/SpaceMono-Regular.woff2") format("woff2");
+}
+
+/* Upstream's sidebar footer icons live in the rail. */
+[data-farther-sidebar] [data-sidebar-utility] {
+  display: none;
+}
+
+@utility font-farther-mono {
+  font-family: "Space Mono", var(--font-mono);
+}
+
+/* Threads sit one step in from their project folder. */
+[data-farther-project-threads] [data-testid="sidebar-row-slim"] {
+  padding-inline-start: 1.25rem;
+}
