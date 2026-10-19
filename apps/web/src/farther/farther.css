@@ -318,3 +318,55 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   > div:first-child {
   background: transparent;
 }
+
+/*
+ * The thread title keeps its tab: it rises into the top bar after the
+ * traffic lights, toggle, and small brand, and joins the canvas below.
+ * --farther-tab-left is measured from the rail's edge.
+ */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
+  --farther-tab-left: calc(var(--workspace-controls-left) + 66px);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"]::after {
+  content: "";
+  position: absolute;
+  top: var(--farther-tab-inset, 8px);
+  left: var(--farther-tab-left);
+  right: 0;
+  height: calc(var(--workspace-topbar-height) - var(--farther-tab-inset, 8px) + 1px);
+  z-index: -1;
+  border-top: 1px solid var(--sidebar-border);
+  border-left: 1px solid var(--sidebar-border);
+  border-top-left-radius: 12px;
+  background: var(--background);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  [data-chat-header] {
+  padding-top: var(--farther-tab-inset, 8px);
+  --workspace-titlebar-content-left: calc(var(--farther-tab-left) + 20px);
+}
+
+/* The small brand stands in for the collapsed list's header. */
+[data-farther-mini-brand] {
+  left: calc(var(--workspace-controls-left) + 36px);
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+
+[data-slot="sidebar"][data-state="collapsed"] [data-farther-mini-brand] {
+  opacity: 1;
+  transition-delay: 80ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-farther-mini-brand] {
+    transition: none;
+  }
+}
