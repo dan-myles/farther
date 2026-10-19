@@ -1,7 +1,8 @@
-import { ChevronDownIcon, ChevronRightIcon, FolderIcon, PlusIcon } from "lucide-react";
+import { ChevronDownIcon, FolderIcon, PlusIcon } from "lucide-react";
 import { createContext, useContext, useState, type ReactNode } from "react";
 
 import { useScratchProject } from "~/hooks/useScratchProject";
+import { cn } from "~/lib/utils";
 import { usePrimaryEnvironmentId } from "~/state/environments";
 
 import type { FartherSidebarGroups } from "./projectGroups";
@@ -100,21 +101,36 @@ export function renderFartherProjectGroups<Thread>(input: {
           <FolderIcon aria-hidden className="size-4 shrink-0 text-sidebar-muted-foreground" />
           <span className="min-w-0 flex-1 truncate">{group.label}</span>
           {isCollapsed ? (
-            <span className="flex items-center gap-1 text-xs font-normal text-sidebar-muted-foreground tabular-nums">
+            <span className="text-xs font-normal text-sidebar-muted-foreground tabular-nums">
               {group.threads.length}
-              <ChevronRightIcon aria-hidden className="size-3.5" />
             </span>
-          ) : (
-            <ChevronDownIcon aria-hidden className="size-3.5 text-sidebar-muted-foreground" />
-          )}
+          ) : null}
+          <ChevronDownIcon
+            aria-hidden
+            className={cn(
+              "size-3.5 shrink-0 text-sidebar-muted-foreground transition-transform duration-150 ease-out motion-reduce:transition-none",
+              isCollapsed && "-rotate-90",
+            )}
+          />
         </button>
-        {isCollapsed ? null : (
-          <ul role="presentation" data-farther-project-threads="" className="flex flex-col gap-px">
+        <div
+          data-farther-project-body=""
+          inert={isCollapsed}
+          className={cn(
+            "grid transition-[grid-template-rows] duration-150 ease-out motion-reduce:transition-none",
+            isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]",
+          )}
+        >
+          <ul
+            role="presentation"
+            data-farther-project-threads=""
+            className="flex min-h-0 flex-col gap-px overflow-hidden"
+          >
             <FartherGroupedRowContext.Provider value>
               {group.threads.map(renderRow)}
             </FartherGroupedRowContext.Provider>
           </ul>
-        )}
+        </div>
       </li>,
     );
   }

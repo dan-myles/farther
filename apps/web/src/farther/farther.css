@@ -228,7 +228,25 @@
   }
 }
 
-/* On web the collapsed toggle sits above the rail, not over the chat, so the title keeps its usual gutter. */
-html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
-  --workspace-titlebar-content-left: var(--workspace-gutter-start);
+/* The web build mirrors desktop: the title bar's controls start after the traffic lights. */
+html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
+  --workspace-controls-left: 84px !important;
+}
+
+/* Collapsed, the chat starts after the rail rather than at the window edge. */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
+  --workspace-titlebar-content-left: calc(
+    var(--workspace-controls-left) + var(--workspace-titlebar-control-size) +
+      var(--workspace-titlebar-control-gap) - 56px
+  );
+}
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control] {
+  transition: left 220ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control] {
+    transition: none;
+  }
 }
