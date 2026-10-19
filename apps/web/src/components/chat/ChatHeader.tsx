@@ -36,6 +36,7 @@ import {
 import { observeResize } from "~/lib/observeResize";
 import { cn } from "~/lib/utils";
 import { useClientSettings } from "../../hooks/useSettings";
+import { FartherThreadMeta } from "~/farther/FartherThreadMeta";
 
 interface ChatHeaderProps {
   activeThreadEnvironmentId: EnvironmentId;
@@ -267,6 +268,7 @@ export const ChatHeader = memo(function ChatHeader({
   return (
     <div
       ref={breadcrumbContainerRef}
+      data-farther-thread-header={activeProject ? "project" : ""}
       className={cn(
         "flex min-w-0 flex-1 items-center gap-2 sm:gap-3",
         rightPanelOpen ? "pr-10" : "pr-24",
@@ -397,6 +399,7 @@ export const ChatHeader = memo(function ChatHeader({
             </Tooltip>
           )}
         </WorkspaceBreadcrumbItem>
+        <FartherThreadMeta threadRef={activeThreadRef} projectCwd={activeProjectCwd} />
       </WorkspaceBreadcrumb>
     </div>
   );

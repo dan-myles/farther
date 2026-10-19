@@ -69,3 +69,19 @@
 [data-farther-project-threads] [data-testid="sidebar-row-slim"] {
   padding-inline-start: 1.25rem;
 }
+
+[data-farther-thread-header="project"] nav > ol > li:nth-child(-n + 2) {
+  display: none;
+}
+
+[data-farther-thread-header] nav > ol {
+  gap: 12px;
+}
+
+[data-farther-thread-header] li[aria-current="page"] {
+  flex: 0 1 auto;
+}
+
+[data-farther-thread-header] [data-thread-title-chevron] {
+  display: none;
+}
