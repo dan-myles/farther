@@ -87,3 +87,55 @@
 [data-farther-thread-header] [data-thread-title-chevron] {
   display: none;
 }
+
+/*
+ * Sidebar header per Paper: the workspace name on the left, search and compose
+ * icons on the right. Search stays upstream's field, collapsed to its icon
+ * until focused or holding a query.
+ */
+[data-farther-sidebar] :has(> [data-farther-workspace-switcher]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 10px 8px;
+}
+
+[data-farther-sidebar] :has(> [data-farther-workspace-switcher]) > div:last-child {
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+[data-farther-sidebar]
+  :has(> [data-farther-workspace-switcher])
+  > div:last-child
+  > div:first-child {
+  flex: 0 0 auto;
+  width: 28px;
+  padding-inline: 6px;
+  overflow: hidden;
+}
+
+[data-farther-sidebar]
+  :has(> [data-farther-workspace-switcher])
+  > div:last-child
+  > div:first-child:is(:focus-within, :has(input[type="search"]:not(:placeholder-shown))) {
+  flex: 1 1 auto;
+  width: auto;
+}
+
+[data-farther-sidebar]
+  :has(> [data-farther-workspace-switcher]):has(
+    input[type="search"]:focus,
+    input[type="search"]:not(:placeholder-shown)
+  )
+  > [data-farther-workspace-switcher] {
+  display: none;
+}
+
+[data-farther-sidebar]
+  :has(> [data-farther-workspace-switcher])
+  [aria-label^="Filter threads by project"],
+[data-farther-sidebar] :has(> [data-farther-workspace-switcher]) button[aria-label="Add project"] {
+  display: none;
+}
