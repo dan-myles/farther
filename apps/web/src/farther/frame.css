@@ -154,7 +154,8 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   content: "";
   position: absolute;
   top: calc(var(--workspace-topbar-height) - 1px - var(--farther-radius));
-  left: calc(0px - var(--farther-radius));
+  /* Positioned against <main>'s first child, which <main>'s 1px padding shifts right. */
+  left: calc(-1px - var(--farther-radius));
   width: calc(var(--farther-radius) + 1px);
   height: calc(var(--farther-radius) + 1px);
   z-index: -1;
@@ -162,10 +163,11 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   opacity: 0;
   background: radial-gradient(
     circle at 0 0,
-    var(--sidebar) calc(var(--farther-radius) - 0.5px),
-    var(--sidebar-border) calc(var(--farther-radius) - 0.5px),
-    var(--sidebar-border) calc(var(--farther-radius) + 0.5px),
-    var(--background) calc(var(--farther-radius) + 0.5px)
+    /* Ring spans radius..radius+1 so it lines up with the 1px borders it joins. */ var(--sidebar)
+      var(--farther-radius),
+    var(--sidebar-border) var(--farther-radius),
+    var(--sidebar-border) calc(var(--farther-radius) + 1px),
+    var(--background) calc(var(--farther-radius) + 1px)
   );
   transition:
     left var(--farther-duration) var(--farther-ease),
@@ -191,7 +193,7 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   )
   > main[data-slot="sidebar-inset"]
   > div:first-child::before {
-  left: calc(var(--farther-collapsed-tab-left) - var(--farther-radius));
+  left: calc(var(--farther-collapsed-tab-left) - var(--farther-radius) - 1px);
   opacity: 1;
   transition:
     left var(--farther-duration) var(--farther-ease),
