@@ -140,3 +140,11 @@
 [data-farther-sidebar] :has(> [data-farther-workspace-switcher]) button[aria-label="Add project"] {
   display: none;
 }
+
+/* Paper puts the sidebar toggle at the end of the brand row; collapsed, it stays put to reopen. */
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="expanded"] [data-farther-sidebar]
+  )
+  [data-sidebar-control] {
+  left: calc(var(--sidebar-width) - 40px);
+}
