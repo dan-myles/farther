@@ -178,6 +178,13 @@ import { buildThreadRouteParams, resolveActiveThreadRouteRef } from "../threadRo
 import { formatRelativeTimeLabel, parseTimestampDate } from "../timestampFormat";
 import type { SidebarThreadSummary } from "../types";
 import { isScratchProject } from "@t3tools/client-runtime/state/projects";
+import {
+  FartherStatusMarker,
+  renderFartherProjectGroups,
+  useFartherCollapsedProjects,
+  useFartherGroupedRow,
+} from "../farther/FartherProjectGroups";
+import { groupSidebarThreadsByProject } from "../farther/projectGroups";
 import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
 import { cn } from "~/lib/utils";
 import { EnvironmentMachineIcon } from "./EnvironmentMachineIcon";
@@ -1598,6 +1605,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
     variantAction,
   } = props;
   const threadRef = scopeThreadRef(thread.environmentId, thread.id);
+  const fartherGroupedRow = useFartherGroupedRow();
   const threadKey = scopedThreadKey(threadRef);
   const canOperateThread = useEnvironmentScope(thread.environmentId, AuthOrchestrationOperateScope);
   useEffect(() => {
@@ -2119,11 +2127,16 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
             <span
               className={cn(
                 "flex shrink-0 items-center transition-opacity",
-                (!props.isActive || variantAction === "unsettle") &&
+                !fartherGroupedRow &&
+                  (!props.isActive || variantAction === "unsettle") &&
                   "opacity-40 grayscale group-focus-within/sidebar-row:opacity-100 group-focus-within/sidebar-row:grayscale-0 group-hover/sidebar-row:opacity-100 group-hover/sidebar-row:grayscale-0",
               )}
             >
-              {props.project ? <ProjectFavicon project={props.project} className="size-4" /> : null}
+              {fartherGroupedRow ? (
+                <FartherStatusMarker status={topStatus?.icon ?? null} />
+              ) : props.project ? (
+                <ProjectFavicon project={props.project} className="size-4" />
+              ) : null}
             </span>
             {draftIndicator}
             {title}
@@ -2819,6 +2832,7 @@ export default function Sidebar() {
   const queuePendingFileDrop = useSidebarPendingFileDropStore((s) => s.queuePendingFileDrop);
   const clearPendingFileDrop = useSidebarPendingFileDropStore((s) => s.clearPendingFileDrop);
   const [renamingThreadKey, setRenamingThreadKey] = useState<string | null>(null);
+  const fartherProjects = useFartherCollapsedProjects();
   const [renamingTitle, setRenamingTitle] = useState("");
   const settlingThreadKeysRef = useRef(new Set<string>());
   const threadListRef = useRef<HTMLUListElement | null>(null);
@@ -4788,12 +4802,14 @@ export default function Sidebar() {
                       const renderThreadRow = (
                         thread: EnvironmentThreadShell,
                         section: SidebarSection,
+                        grouped = false,
                       ) => {
                         const threadKey = scopedThreadKey(
                           scopeThreadRef(thread.environmentId, thread.id),
                         );
                         const isCard =
-                          section === "active" || section === "pinned" || section === "working";
+                          !grouped &&
+                          (section === "active" || section === "pinned" || section === "working");
                         const rowVariant = isCard ? "card" : "slim";
                         return (
                           <SortableThreadRow
@@ -4801,6 +4817,7 @@ export default function Sidebar() {
                             sortableId={threadKey}
                             contextDrag={isContextDrag}
                             sortableDisabled={
+                              grouped ||
                               renamingThreadKey === threadKey ||
                               !draggableThreadKeys.has(threadKey) ||
                               optimisticDrop !== null
@@ -4905,7 +4922,56 @@ export default function Sidebar() {
                           onDraftContextMenu={handleDraftContextMenu}
                         />,
                       ];
+                      // Farther shows live threads in project folders; the
+                      // snoozed and settled shelves below keep upstream's layout.
+                      const fartherLiveSections = new Set<SidebarSection>([
+                        "pinned",
+                        "active",
+                        "working",
+                      ]);
+                      items.push(
+                        ...renderFartherProjectGroups({
+                          groups: groupSidebarThreadsByProject(
+                            sidebarListItems.flatMap((item) =>
+                              item.kind === "thread" && fartherLiveSections.has(item.section)
+                                ? [{ thread: threadByKey.get(item.key)!, section: item.section }]
+                                : [],
+                            ),
+                            ({ thread }) => {
+                              const projectKey =
+                                `${thread.environmentId}:${thread.projectId}` as const;
+                              const project = projectByKey.get(projectKey);
+                              const label = projectDisplayNameByKey.get(projectKey) ?? "Project";
+                              return {
+                                groupKey: label,
+                                label,
+                                isChat:
+                                  project !== undefined &&
+                                  isScratchProject(
+                                    project,
+                                    serverConfigs.get(thread.environmentId)?.scratchWorkspaceRoot,
+                                  ),
+                              };
+                            },
+                          ),
+                          collapsed: fartherProjects.collapsed,
+                          onToggleProject: fartherProjects.toggle,
+                          onAddProject: openAddProjectCommandPalette,
+                          renderRow: ({ thread, section }) =>
+                            renderThreadRow(thread, section, true),
+                        }),
+                      );
                       for (const item of sidebarListItems) {
+                        if (
+                          item.kind === "thread"
+                            ? fartherLiveSections.has(item.section)
+                            : item.marker === "pinned-header" ||
+                              item.marker === "pinned-divider" ||
+                              item.marker === "active-placeholder" ||
+                              item.marker === "working-header"
+                        ) {
+                          continue;
+                        }
                         if (item.kind === "thread") {
                           items.push(renderThreadRow(threadByKey.get(item.key)!, item.section));
                           continue;
