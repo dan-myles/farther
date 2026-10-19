@@ -5000,7 +5000,9 @@ export default function Sidebar() {
                             renderThreadRow(thread, section, true),
                         }),
                       );
-                      for (const item of sidebarListItems) {
+                      // Farther shows only the live folders; the snoozed and settled shelves stay out.
+                      const fartherShelfItems: typeof sidebarListItems = [];
+                      for (const item of fartherShelfItems) {
                         if (
                           item.kind === "thread"
                             ? fartherLiveSections.has(item.section)
