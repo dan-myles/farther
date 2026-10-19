@@ -98,7 +98,19 @@
   flex-direction: row;
   align-items: center;
   gap: 4px;
-  padding-inline: 10px 8px;
+  /* Same inset as the list's section labels and their + buttons below. */
+  padding-inline: 18px;
+}
+
+[data-farther-sidebar] :has(> [data-farther-workspace-switcher]) > div:last-child button {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+}
+
+[data-farther-sidebar] :has(> [data-farther-workspace-switcher]) > div:last-child svg {
+  width: 15px;
+  height: 15px;
 }
 
 [data-farther-sidebar] :has(> [data-farther-workspace-switcher]) > div:last-child {
@@ -112,8 +124,8 @@
   > div:last-child
   > div:first-child {
   flex: 0 0 auto;
-  width: 28px;
-  padding-inline: 6px;
+  width: 22px;
+  padding-inline: 3.5px;
   overflow: hidden;
 }
 
@@ -146,7 +158,7 @@
     [data-slot="sidebar"][data-state="expanded"] [data-farther-sidebar]
   )
   [data-sidebar-control] {
-  left: calc(var(--sidebar-width) - 40px);
+  left: calc(var(--sidebar-width) - 43px);
 }
 
 /* The chat canvas draws its own left edge from the tab down; upstream's container border would run to the top. */
@@ -249,4 +261,60 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control] {
     transition: none;
   }
+}
+
+/* Paper centers the brand over the list column. */
+[data-farther-sidebar-panel] a:has([data-farther-brand]) {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+/*
+ * Collapsed, the top bar and the rail form the inverted L: the traffic lights,
+ * the toggle, and the thread's title row share the top bar, and the chat canvas
+ * starts below it. Without this the toggle would sit on the canvas corner.
+ */
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"] {
+  position: relative;
+  isolation: isolate;
+  margin-top: 0;
+  border-top: 0;
+  border-left: 0;
+  border-top-left-radius: 0;
+  background: transparent;
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"]::before {
+  content: "";
+  position: absolute;
+  inset: var(--workspace-topbar-height) 0 0 0;
+  z-index: -1;
+  border-top: 1px solid var(--sidebar-border);
+  border-left: 1px solid var(--sidebar-border);
+  border-top-left-radius: 12px;
+  background: var(--background);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  [data-chat-header] {
+  height: var(--workspace-topbar-height);
+  background: transparent;
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"]
+  > div:first-child {
+  background: transparent;
 }

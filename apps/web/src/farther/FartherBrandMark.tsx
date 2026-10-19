@@ -5,6 +5,7 @@ import { FartherRing } from "./FartherRing";
 export function FartherBrandMark({ onBackdrop }: { onBackdrop: boolean }) {
   return (
     <span
+      data-farther-brand=""
       className={cn(
         "inline-flex min-w-0 items-center gap-2",
         onBackdrop ? "text-white" : "text-sidebar-foreground",
