@@ -27,8 +27,8 @@ import {
   GROVE_THEME,
   IRIS_THEME,
   OCEAN_THEME,
-  TOKYO_NIGHT_THEME,
 } from "../../themePalette";
+import { FARTHER_THEMES } from "@t3tools/shared/fartherThemes";
 import {
   AlertDialog,
   AlertDialogClose,
@@ -61,7 +61,7 @@ const MAINTAINER_THEMES: ReadonlyArray<ThemeDefinition> = [
   OCEAN_THEME,
   EMBER_THEME,
   IRIS_THEME,
-  TOKYO_NIGHT_THEME,
+  ...FARTHER_THEMES,
 ];
 
 function collectionVariantLabels(themes: ReadonlyArray<ThemeDefinition>): ReadonlyArray<string> {
