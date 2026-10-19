@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { ClockIcon, InboxIcon, ListIcon, SettingsIcon } from "lucide-react";
+import { ClockIcon, HouseIcon, InboxIcon, ListIcon, SettingsIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { PullRequestGlyph } from "~/components/pullRequest/pullRequestIcons";
@@ -7,8 +7,6 @@ import { readPullRequestListPreferences } from "~/components/pullRequest/pullReq
 import { Tooltip, TooltipPopup, TooltipTrigger } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { usePrimaryEnvironment, usePullRequestsSupported } from "~/state/environments";
-
-import { FartherRing } from "./FartherRing";
 
 function RailButton({
   label,
@@ -115,7 +113,7 @@ export function FartherRail() {
           active={!onSettings && pathname !== "/pull-requests" && pathname !== "/usage"}
           onClick={() => void navigate({ to: "/" })}
         >
-          <FartherRing />
+          <HouseIcon />
         </RailButton>
         <RailButton label="Inbox">
           <InboxIcon />
