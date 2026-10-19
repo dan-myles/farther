@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { isElectron } from "~/env";
 
 import { FartherRail } from "./FartherRail";
-import { FartherRing } from "./FartherRing";
 
 // Stand-ins for macOS's window controls so the web build previews the desktop
 // title bar. Fixed so a collapsed sidebar's clipping doesn't cut them.
@@ -12,7 +11,7 @@ function FartherTrafficLights() {
     <div
       aria-hidden
       data-farther-traffic-lights=""
-      className="pointer-events-none fixed top-[18px] left-5 z-50 flex gap-2"
+      className="pointer-events-none fixed top-5 left-5 z-50 flex gap-2"
     >
       <span className="size-3 rounded-full bg-[#ff5f57]" />
       <span className="size-3 rounded-full bg-[#febc2e]" />
@@ -21,27 +20,10 @@ function FartherTrafficLights() {
   );
 }
 
-// Shown in the top bar while the list is collapsed, so the brand never leaves.
-function FartherMiniBrand() {
-  return (
-    <div
-      aria-hidden
-      data-farther-mini-brand=""
-      className="pointer-events-none fixed top-[17px] z-50 flex items-center gap-1.5 text-sidebar-muted-foreground"
-    >
-      <FartherRing className="size-3" />
-      <span className="font-farther-mono text-[13px] leading-none tracking-[-0.055em]">
-        farther
-      </span>
-    </div>
-  );
-}
-
 export function FartherSidebarShell({ children }: { children: ReactNode }) {
   return (
     <div data-farther-sidebar="" className="flex h-full min-h-0 w-full">
       {isElectron ? null : <FartherTrafficLights />}
-      <FartherMiniBrand />
       <FartherRail />
       <div data-farther-sidebar-panel="" className="flex min-h-0 min-w-0 flex-1 flex-col">
         {children}

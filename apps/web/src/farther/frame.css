@@ -17,8 +17,11 @@
   --farther-duration: 220ms;
   /* Crossfades run inside the slide: out during its first half, in during its second. */
   --farther-fade: calc(var(--farther-duration) * 0.5);
-  /* Tab start while collapsed, measured from the rail's edge: controls, toggle, small brand. */
-  --farther-collapsed-tab-left: calc(var(--workspace-controls-left) + 66px);
+  /* Tab start while collapsed, measured from the rail's edge: just past the toggle. */
+  --farther-collapsed-tab-left: calc(
+    var(--workspace-controls-left) + var(--workspace-titlebar-control-size) + 10px -
+      var(--farther-rail-width)
+  );
   background: var(--sidebar);
 }
 
@@ -74,7 +77,7 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   left: calc(var(--sidebar-width) - 43px);
 }
 
-/* ---------- Brand: centered over the list; a small one stands in when collapsed ---------- */
+/* ---------- Brand: centered over the list; fades out as the list collapses ---------- */
 
 [data-farther-sidebar-panel] a:has([data-farther-brand]) {
   position: absolute;
@@ -91,23 +94,14 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   transition-delay: 0ms;
 }
 
-[data-farther-mini-brand] {
-  left: calc(var(--workspace-controls-left) + 36px);
-  opacity: 0;
-  transition: opacity var(--farther-fade) ease-out;
-}
-
-[data-slot="sidebar"][data-state="collapsed"] [data-farther-mini-brand] {
-  opacity: 1;
-  transition-delay: var(--farther-fade);
-}
-
 /* ---------- Chat canvas: tab + body ---------- */
 
 [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) > main[data-slot="sidebar-inset"] {
   position: relative;
   isolation: isolate;
   margin-top: 0;
+  /* Keeps content off the canvas's 1px left edge, as <main>'s own border used to. */
+  padding-left: 1px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -124,7 +118,7 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   > main[data-slot="sidebar-inset"]::before {
   content: "";
   position: absolute;
-  inset: var(--workspace-topbar-height) 0 0 0;
+  inset: calc(var(--workspace-topbar-height) - 1px) 0 0 0;
   z-index: -3;
   border-top: 1px solid var(--sidebar-border);
   border-left: 1px solid var(--sidebar-border);
@@ -159,7 +153,7 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   > div:first-child::before {
   content: "";
   position: absolute;
-  top: calc(var(--workspace-topbar-height) - var(--farther-radius));
+  top: calc(var(--workspace-topbar-height) - 1px - var(--farther-radius));
   left: calc(0px - var(--farther-radius));
   width: calc(var(--farther-radius) + 1px);
   height: calc(var(--farther-radius) + 1px);
@@ -204,6 +198,24 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
     opacity var(--farther-fade) ease-out var(--farther-fade);
 }
 
+/*
+ * The chat's content column paints the canvas color itself, square-cornered,
+ * over the body above. Round and clip it to match, inside the body's border.
+ */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] + div {
+  overflow: clip;
+  border-top-left-radius: 0;
+  transition: border-top-left-radius var(--farther-duration) var(--farther-ease);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  [data-chat-header]
+  + div {
+  border-top-left-radius: calc(var(--farther-radius) - 1px);
+}
+
 /* ---------- Title row: lives in the tab and slides with it ---------- */
 
 [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
@@ -226,8 +238,8 @@ html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
   [data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
     > main[data-slot="sidebar-inset"]
     > div:first-child::before,
-  [data-farther-sidebar-panel] a:has([data-farther-brand]),
-  [data-farther-mini-brand] {
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] + div,
+  [data-farther-sidebar-panel] a:has([data-farther-brand]) {
     transition: none !important;
   }
 }
