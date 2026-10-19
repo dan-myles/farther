@@ -58,12 +58,17 @@
 }
 
 /*
- * Thread rows share the folder row's columns: status sits under the folder
- * icon and the title lines up with the folder name, so nesting reads from
- * alignment instead of spending width on an indent.
+ * Thread rows start where the folder row does, so titles get the full width.
+ * The status slot only takes room when a thread has something to show.
  */
 :is([data-farther-project-threads], [data-farther-chats]) [data-testid="sidebar-row-slim"] {
   padding-inline: 10px;
+}
+
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  > span.shrink-0:has(> [data-farther-status="idle"]) {
+  display: none;
 }
 
 [data-farther-thread-header="project"] nav > ol > li:nth-child(-n + 2) {
@@ -182,20 +187,22 @@
   gap: 8px;
 }
 
-/* The time column hugs its label so a PR icon sits right beside it. */
+/*
+ * The time hugs its label so a PR icon sits right beside it, and the archive
+ * action takes its place on hover, flush with the row's right padding.
+ */
 :is([data-farther-project-threads], [data-farther-chats])
   [data-testid="sidebar-row-slim"]
   > span.ml-auto:last-of-type {
-  min-width: 24px;
+  min-width: 0;
   margin-inline-start: -2px;
-  justify-content: flex-start;
 }
 
 :is([data-farther-project-threads], [data-farther-chats])
   [data-testid="sidebar-row-slim"]
   > span.ml-auto:last-of-type
   > button {
-  padding-inline: 5px;
+  padding-inline: 3px 0;
 }
 
 /* Pinned threads already lead their folder, so the pin glyph only costs title space. */
