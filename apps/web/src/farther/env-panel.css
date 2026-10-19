@@ -349,3 +349,37 @@
     background-color: color-mix(in srgb, var(--foreground) 5%, transparent) !important;
   }
 }
+
+/* A 6px grab strip centered on the dock's left border; the line lights up under it. */
+[data-farther-env-resize] {
+  position: absolute;
+  inset-block: 0;
+  left: -3px;
+  z-index: 1;
+  width: 6px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+[data-farther-env-resize]::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 2px;
+  width: 1px;
+  background: transparent;
+  transition: background-color 120ms ease-out;
+}
+
+[data-farther-env-resize]:hover::after,
+[data-farther-env-resize][data-dragging]::after {
+  background: color-mix(in srgb, var(--foreground) 22%, transparent);
+}
+
+[data-farther-env-resize]:hover::after {
+  transition-delay: 80ms;
+}
+
+[data-farther-env-resize][data-dragging]::after {
+  transition-delay: 0ms;
+}

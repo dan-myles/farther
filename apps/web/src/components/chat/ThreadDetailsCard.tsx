@@ -11,6 +11,10 @@ import {
   resolveFartherEnvironmentPanelDensity as resolveThreadDetailsCardDensity,
   resolveFartherEnvironmentPanelLayout as resolveThreadDetailsCardLayout,
 } from "../../farther/environmentPanelLayout";
+import {
+  FartherEnvironmentPanelResizeHandle,
+  useFartherEnvironmentPanelWidth,
+} from "../../farther/FartherEnvironmentPanelResize";
 import { observeResize } from "../../lib/observeResize";
 
 export function ThreadDetailsCard({
@@ -27,12 +31,14 @@ export function ThreadDetailsCard({
   children: (density: "full" | "compact" | "essential") => ReactNode;
 }) {
   const canvas = useChatCanvas();
+  const [preferredWidth] = useFartherEnvironmentPanelWidth();
   const preferredPlacement = canvas
     ? resolveThreadDetailsCardLayout({
         container: canvas.container,
         lane: canvas.lane,
         frame: null,
         topInset: canvas.detailsCardTopInset,
+        preferredWidth,
       })
     : null;
   const placement = canvas
@@ -42,6 +48,7 @@ export function ThreadDetailsCard({
         frame: canvas.layout.frame,
         overlapsDetailsCard: canvas.layout.overlapsDetailsCard,
         topInset: canvas.detailsCardTopInset,
+        preferredWidth,
       })
     : null;
   const mode = placement ? "inline" : "popover";
@@ -170,6 +177,7 @@ export function ThreadDetailsCard({
           data-farther-open={inlineOpen ? "" : undefined}
           inert={!inlineOpen}
         >
+          <FartherEnvironmentPanelResizeHandle />
           {card}
         </aside>
       ) : (

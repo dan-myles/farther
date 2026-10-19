@@ -3,6 +3,7 @@ import { ChatCanvasContext } from "./ChatCanvasContext";
 import { resolveChatCanvasLayout, type ChatCanvasPreview } from "./chatCanvasLayout";
 import type { PreviewMiniPlayerObstacles } from "../preview/previewMiniPlayerLayout";
 import { observeResize } from "../../lib/observeResize";
+import { useFartherChatLane } from "../../farther/useFartherChatLane";
 
 export function ChatCanvas({
   composerOverlayElement,
@@ -102,17 +103,18 @@ export function ChatCanvas({
           bottom: measurements.findBarBottom,
         }
       : null;
+  const layoutInput = {
+    ...measurements,
+    container,
+    preview,
+    detailsCard,
+    findBar,
+    dockedDetailsCard: true,
+  };
   const context = {
     container,
     lane: { padding: measurements.padding, minChatWidth: measurements.minChatWidth },
-    layout: resolveChatCanvasLayout({
-      ...measurements,
-      container,
-      preview,
-      detailsCard,
-      findBar,
-      dockedDetailsCard: true,
-    }),
+    layout: resolveChatCanvasLayout(layoutInput),
     previewKey: preview?.key ?? null,
     reportPreview,
     clearPreview,
@@ -121,6 +123,19 @@ export function ChatCanvas({
     detailsCardTopInset: findBar?.bottom ?? 0,
   };
   const { layout } = context;
+  useFartherChatLane(
+    elementRef,
+    layout.chat,
+    (left) =>
+      resolveChatCanvasLayout({
+        ...layoutInput,
+        detailsCard: {
+          left,
+          right: container.width,
+          bottom: detailsCard?.bottom ?? container.height,
+        },
+      }).chat,
+  );
   return (
     <ChatCanvasContext value={context}>
       <div
