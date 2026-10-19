@@ -1,0 +1,233 @@
+/*
+ * Farther's frame. The rail and the top bar share the sidebar tone; the chat
+ * sits on a canvas drawn as two pseudo-elements on <main>: a tab (the title
+ * row, rising to --farther-tab-inset) and a body (below the top bar).
+ * Expanded, the tab spans the canvas. Collapsed, the body runs to the rail and
+ * the tab starts after the window controls and the small brand. Every state
+ * change is a transition of the same pieces, never a layout swap, so the
+ * collapse reads as one motion.
+ */
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
+  --sidebar-width: 320px !important;
+  --farther-rail-width: 56px;
+  --farther-tab-inset: 8px;
+  --farther-radius: 12px;
+  --farther-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --farther-duration: 220ms;
+  /* Crossfades run inside the slide: out during its first half, in during its second. */
+  --farther-fade: calc(var(--farther-duration) * 0.5);
+  /* Tab start while collapsed, measured from the rail's edge: controls, toggle, small brand. */
+  --farther-collapsed-tab-left: calc(var(--workspace-controls-left) + 66px);
+  background: var(--sidebar);
+}
+
+/* The web build mirrors desktop: the title bar's controls start after the traffic lights. */
+html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
+  --workspace-controls-left: 84px !important;
+}
+
+/* ---------- Sidebar: fixed width, collapses to the rail ---------- */
+
+[data-slot="sidebar"]:has([data-farther-sidebar]) [data-slot="sidebar-container"] {
+  overflow: hidden;
+  border-right: 0;
+}
+
+/* The inner layout keeps its full width and is clipped, so rows never reflow mid-slide. */
+[data-farther-sidebar] {
+  width: var(--sidebar-width);
+}
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar="rail"] {
+  display: none;
+}
+
+[data-slot="sidebar"][data-state="collapsed"]:has([data-farther-sidebar])
+  [data-slot="sidebar-gap"] {
+  width: var(--farther-rail-width);
+}
+
+[data-slot="sidebar"][data-state="collapsed"]:has([data-farther-sidebar])
+  [data-slot="sidebar-container"] {
+  left: 0;
+  width: var(--farther-rail-width);
+}
+
+[data-slot="sidebar"]:has([data-farther-sidebar])
+  :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]) {
+  transition:
+    width var(--farther-duration) var(--farther-ease),
+    left var(--farther-duration) var(--farther-ease);
+}
+
+/* ---------- Toggle: end of the brand row, or after the window controls ---------- */
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control] {
+  transition: left var(--farther-duration) var(--farther-ease);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="expanded"] [data-farther-sidebar]
+  )
+  [data-sidebar-control] {
+  left: calc(var(--sidebar-width) - 43px);
+}
+
+/* ---------- Brand: centered over the list; a small one stands in when collapsed ---------- */
+
+[data-farther-sidebar-panel] a:has([data-farther-brand]) {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  transition: opacity var(--farther-fade) ease-out var(--farther-fade);
+}
+
+[data-slot="sidebar"][data-state="collapsed"]
+  [data-farther-sidebar-panel]
+  a:has([data-farther-brand]) {
+  opacity: 0;
+  transition-delay: 0ms;
+}
+
+[data-farther-mini-brand] {
+  left: calc(var(--workspace-controls-left) + 36px);
+  opacity: 0;
+  transition: opacity var(--farther-fade) ease-out;
+}
+
+[data-slot="sidebar"][data-state="collapsed"] [data-farther-mini-brand] {
+  opacity: 1;
+  transition-delay: var(--farther-fade);
+}
+
+/* ---------- Chat canvas: tab + body ---------- */
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) > main[data-slot="sidebar-inset"] {
+  position: relative;
+  isolation: isolate;
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
+  > main[data-slot="sidebar-inset"]
+  > div:first-child {
+  background: transparent;
+}
+
+/* Body: from the top bar down. Square where the full-width tab sits on it. */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
+  > main[data-slot="sidebar-inset"]::before {
+  content: "";
+  position: absolute;
+  inset: var(--workspace-topbar-height) 0 0 0;
+  z-index: -3;
+  border-top: 1px solid var(--sidebar-border);
+  border-left: 1px solid var(--sidebar-border);
+  border-top-left-radius: 0;
+  background: var(--background);
+  transition: border-top-left-radius var(--farther-duration) var(--farther-ease);
+}
+
+/* Tab: the title row. Overlaps the body by a pixel to hide its top border. */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) > main[data-slot="sidebar-inset"]::after {
+  content: "";
+  position: absolute;
+  top: var(--farther-tab-inset);
+  left: 0;
+  right: 0;
+  height: calc(var(--workspace-topbar-height) - var(--farther-tab-inset) + 1px);
+  z-index: -2;
+  border-top: 1px solid var(--sidebar-border);
+  border-left: 1px solid var(--sidebar-border);
+  border-top-left-radius: var(--farther-radius);
+  background: var(--background);
+  transition: left var(--farther-duration) var(--farther-ease);
+}
+
+/*
+ * Inside corner where the tab meets the body: a quarter-circle fillet so the
+ * step reads as one continuous edge. Sits on <main>'s first child because
+ * <main> has no third pseudo-element.
+ */
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
+  > main[data-slot="sidebar-inset"]
+  > div:first-child::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--workspace-topbar-height) - var(--farther-radius));
+  left: calc(0px - var(--farther-radius));
+  width: calc(var(--farther-radius) + 1px);
+  height: calc(var(--farther-radius) + 1px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 0 0,
+    var(--sidebar) calc(var(--farther-radius) - 0.5px),
+    var(--sidebar-border) calc(var(--farther-radius) - 0.5px),
+    var(--sidebar-border) calc(var(--farther-radius) + 0.5px),
+    var(--background) calc(var(--farther-radius) + 0.5px)
+  );
+  transition:
+    left var(--farther-duration) var(--farther-ease),
+    opacity var(--farther-fade) ease-out;
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"]::before {
+  border-top-left-radius: var(--farther-radius);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"]::after {
+  left: var(--farther-collapsed-tab-left);
+}
+
+[data-slot="sidebar-wrapper"]:has(
+    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
+  )
+  > main[data-slot="sidebar-inset"]
+  > div:first-child::before {
+  left: calc(var(--farther-collapsed-tab-left) - var(--farther-radius));
+  opacity: 1;
+  transition:
+    left var(--farther-duration) var(--farther-ease),
+    opacity var(--farther-fade) ease-out var(--farther-fade);
+}
+
+/* ---------- Title row: lives in the tab and slides with it ---------- */
+
+[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
+  height: var(--workspace-topbar-height);
+  padding-top: var(--farther-tab-inset);
+  background: transparent;
+  --workspace-titlebar-content-left: calc(var(--farther-collapsed-tab-left) + 20px);
+  transition: padding-left var(--farther-duration) var(--farther-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="sidebar"]:has([data-farther-sidebar])
+    :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]),
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control],
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header],
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
+    > main[data-slot="sidebar-inset"]::before,
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
+    > main[data-slot="sidebar-inset"]::after,
+  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar])
+    > main[data-slot="sidebar-inset"]
+    > div:first-child::before,
+  [data-farther-sidebar-panel] a:has([data-farther-brand]),
+  [data-farther-mini-brand] {
+    transition: none !important;
+  }
+}

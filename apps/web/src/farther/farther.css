@@ -1,5 +1,6 @@
 @import "./composer-timeline.css";
 @import "./env-panel.css";
+@import "./frame.css";
 
 /*
  * Farther's inverted-L frame. The title bar row and the icon rail share the
@@ -36,19 +37,6 @@
 
 [data-slot="sidebar-inner"]:has([data-farther-sidebar]) {
   border-right: 0;
-}
-
-/* Chat canvas: rises into the title bar so the thread header reads as its tab. */
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) > main[data-slot="sidebar-inset"] {
-  margin-top: var(--farther-tab-inset, 8px);
-  border-top: 1px solid var(--sidebar-border);
-  border-left: 1px solid var(--sidebar-border);
-  border-top-left-radius: 12px;
-  overflow: hidden;
-}
-
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
-  height: calc(var(--workspace-topbar-height) - var(--farther-tab-inset, 8px));
 }
 
 @font-face {
@@ -153,28 +141,6 @@
   display: none;
 }
 
-/* Paper puts the sidebar toggle at the end of the brand row; collapsed, it stays put to reopen. */
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="expanded"] [data-farther-sidebar]
-  )
-  [data-sidebar-control] {
-  left: calc(var(--sidebar-width) - 43px);
-}
-
-/* The chat canvas draws its own left edge from the tab down; upstream's container border would run to the top. */
-[data-slot="sidebar-container"]:has([data-farther-sidebar]) {
-  border-right: 0;
-}
-
-/* Fixed width per Paper: 56px rail + 264px list. */
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
-  --sidebar-width: 320px !important;
-}
-
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar="rail"] {
-  display: none;
-}
-
 /* Paper's list type: 13px rows on a 31px rhythm. */
 :is([data-farther-project-threads], [data-farther-chats]) > li {
   contain-intrinsic-size: auto 31px;
@@ -200,173 +166,4 @@
   font-family: "Space Mono", var(--font-mono);
   font-size: 11px;
   letter-spacing: -0.02em;
-}
-
-/*
- * Collapsing keeps the rail, as in Paper's L frame: only the list slides away.
- * The inner layout keeps its full width and is clipped, so rows never reflow
- * mid-slide. One-shot transition on toggle; nothing repaints at rest.
- */
-[data-slot="sidebar"]:has([data-farther-sidebar]) [data-slot="sidebar-container"] {
-  overflow: hidden;
-}
-
-[data-farther-sidebar] {
-  width: var(--sidebar-width);
-}
-
-[data-slot="sidebar"][data-state="collapsed"]:has([data-farther-sidebar])
-  [data-slot="sidebar-gap"] {
-  width: 56px;
-}
-
-[data-slot="sidebar"][data-state="collapsed"]:has([data-farther-sidebar])
-  [data-slot="sidebar-container"] {
-  left: 0;
-  width: 56px;
-}
-
-[data-slot="sidebar"]:has([data-farther-sidebar])
-  :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]) {
-  transition:
-    width 220ms cubic-bezier(0.32, 0.72, 0, 1),
-    left 220ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-slot="sidebar"]:has([data-farther-sidebar])
-    :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]) {
-    transition: none;
-  }
-}
-
-/* The web build mirrors desktop: the title bar's controls start after the traffic lights. */
-html:not(.electron) [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
-  --workspace-controls-left: 84px !important;
-}
-
-/* Collapsed, the chat starts after the rail rather than at the window edge. */
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-chat-header] {
-  --workspace-titlebar-content-left: calc(
-    var(--workspace-controls-left) + var(--workspace-titlebar-control-size) +
-      var(--workspace-titlebar-control-gap) - 56px
-  );
-}
-
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control] {
-  transition: left 220ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) [data-sidebar-control] {
-    transition: none;
-  }
-}
-
-/* Paper centers the brand over the list column. */
-[data-farther-sidebar-panel] a:has([data-farther-brand]) {
-  position: absolute;
-  left: 50%;
-  margin: 0;
-  transform: translateX(-50%);
-}
-
-/*
- * Collapsed, the top bar and the rail form the inverted L: the traffic lights,
- * the toggle, and the thread's title row share the top bar, and the chat canvas
- * starts below it. Without this the toggle would sit on the canvas corner.
- */
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
-  )
-  > main[data-slot="sidebar-inset"] {
-  position: relative;
-  isolation: isolate;
-  margin-top: 0;
-  border-top: 0;
-  border-left: 0;
-  border-top-left-radius: 0;
-  background: transparent;
-}
-
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
-  )
-  > main[data-slot="sidebar-inset"]::before {
-  content: "";
-  position: absolute;
-  inset: var(--workspace-topbar-height) 0 0 0;
-  z-index: -1;
-  border-top: 1px solid var(--sidebar-border);
-  border-left: 1px solid var(--sidebar-border);
-  border-top-left-radius: 12px;
-  background: var(--background);
-}
-
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
-  )
-  [data-chat-header] {
-  height: var(--workspace-topbar-height);
-  background: transparent;
-}
-
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
-  )
-  > main[data-slot="sidebar-inset"]
-  > div:first-child {
-  background: transparent;
-}
-
-/*
- * The thread title keeps its tab: it rises into the top bar after the
- * traffic lights, toggle, and small brand, and joins the canvas below.
- * --farther-tab-left is measured from the rail's edge.
- */
-[data-slot="sidebar-wrapper"]:has([data-farther-sidebar]) {
-  --farther-tab-left: calc(var(--workspace-controls-left) + 66px);
-}
-
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
-  )
-  > main[data-slot="sidebar-inset"]::after {
-  content: "";
-  position: absolute;
-  top: var(--farther-tab-inset, 8px);
-  left: var(--farther-tab-left);
-  right: 0;
-  height: calc(var(--workspace-topbar-height) - var(--farther-tab-inset, 8px) + 1px);
-  z-index: -1;
-  border-top: 1px solid var(--sidebar-border);
-  border-left: 1px solid var(--sidebar-border);
-  border-top-left-radius: 12px;
-  background: var(--background);
-}
-
-[data-slot="sidebar-wrapper"]:has(
-    [data-slot="sidebar"][data-state="collapsed"] [data-farther-sidebar]
-  )
-  [data-chat-header] {
-  padding-top: var(--farther-tab-inset, 8px);
-  --workspace-titlebar-content-left: calc(var(--farther-tab-left) + 20px);
-}
-
-/* The small brand stands in for the collapsed list's header. */
-[data-farther-mini-brand] {
-  left: calc(var(--workspace-controls-left) + 36px);
-  opacity: 0;
-  transition: opacity 160ms ease-out;
-}
-
-[data-slot="sidebar"][data-state="collapsed"] [data-farther-mini-brand] {
-  opacity: 1;
-  transition-delay: 80ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-farther-mini-brand] {
-    transition: none;
-  }
 }
