@@ -5,7 +5,10 @@ import { useScratchProject } from "~/hooks/useScratchProject";
 import { cn } from "~/lib/utils";
 import { usePrimaryEnvironmentId } from "~/state/environments";
 
-import type { FartherSidebarGroups } from "./projectGroups";
+import { firstValidTimestampMs, resolveSidebarThreadStatus } from "~/components/Sidebar.logic";
+import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/models";
+
+import { FARTHER_THREAD_RANK, type FartherSidebarGroups } from "./projectGroups";
 
 const COLLAPSED_PROJECTS_STORAGE_KEY = "farther:sidebar:collapsed-projects";
 
@@ -14,6 +17,19 @@ const FartherGroupedRowContext = createContext(false);
 /** True for thread rows rendered inside a farther project folder or the chats list. */
 export function useFartherGroupedRow(): boolean {
   return useContext(FartherGroupedRowContext);
+}
+
+export function fartherThreadOrder(thread: EnvironmentThreadShell) {
+  const status = resolveSidebarThreadStatus(thread);
+  const rank =
+    thread.pinnedAt !== null
+      ? FARTHER_THREAD_RANK.pinned
+      : status === "working" || status === "waiting"
+        ? FARTHER_THREAD_RANK.working
+        : status !== "ready" || thread.hasActionableProposedPlan
+          ? FARTHER_THREAD_RANK.attention
+          : FARTHER_THREAD_RANK.idle;
+  return { rank, activity: firstValidTimestampMs(thread.updatedAt, thread.createdAt) };
 }
 
 function readCollapsedProjects(): ReadonlySet<string> {
@@ -97,7 +113,7 @@ export function renderFartherProjectGroups<Thread>(input: {
             onFolderContextMenu(group.threads, { x: event.clientX, y: event.clientY });
           }}
           data-farther-project-row=""
-          className="flex h-[31px] w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-[13px] leading-[19px] font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-[31px] w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-[13px] leading-[19px] font-medium text-sidebar-foreground outline-hidden hover:bg-sidebar-row-hover focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
           <FolderIcon aria-hidden className="size-4 shrink-0 text-sidebar-muted-foreground" />
           <span className="min-w-0 flex-1 truncate">{group.label}</span>
@@ -141,7 +157,8 @@ export function renderFartherProjectGroups<Thread>(input: {
       <ul
         role="presentation"
         data-farther-projects-scroll=""
-        className="flex max-h-[55dvh] flex-col overflow-y-auto overscroll-contain"
+        data-farther-scroll=""
+        className="flex max-h-[50dvh] flex-col overflow-y-auto overscroll-contain"
       >
         {folders}
       </ul>
@@ -153,7 +170,12 @@ export function renderFartherProjectGroups<Thread>(input: {
   if (groups.chats.length > 0) {
     items.push(
       <li key="farther-chats" className="list-none">
-        <ul role="presentation" data-farther-chats="" className="flex flex-col gap-px">
+        <ul
+          role="presentation"
+          data-farther-chats=""
+          data-farther-scroll=""
+          className="flex max-h-[24dvh] flex-col gap-px overflow-y-auto overscroll-contain"
+        >
           <FartherGroupedRowContext.Provider value>
             {groups.chats.map(renderRow)}
           </FartherGroupedRowContext.Provider>

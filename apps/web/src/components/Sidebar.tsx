@@ -180,6 +180,7 @@ import type { SidebarThreadSummary } from "../types";
 import { isScratchProject } from "@t3tools/client-runtime/state/projects";
 import {
   FartherStatusMarker,
+  fartherThreadOrder,
   renderFartherProjectGroups,
   useFartherCollapsedProjects,
   useFartherGroupedRow,
@@ -4967,6 +4968,7 @@ export default function Sidebar() {
                               const project = projectByKey.get(projectKey);
                               const label = projectDisplayNameByKey.get(projectKey) ?? "Project";
                               return {
+                                ...fartherThreadOrder(thread),
                                 groupKey: label,
                                 label,
                                 isChat:

@@ -172,3 +172,76 @@
   font-size: 11px;
   letter-spacing: -0.02em;
 }
+
+/* Rows give the title the room: status, title, one state icon, time. */
+:is([data-farther-project-threads], [data-farther-chats]) [data-testid="sidebar-row-slim"] {
+  gap: 8px;
+}
+
+/* Pinned threads already lead their folder, so the pin glyph only costs title space. */
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  button[aria-label="Unpin thread"] {
+  display: none;
+}
+
+/* PR and stack badges keep their state-colored icon; the count lives in the tooltip. */
+:is([data-farther-project-threads], [data-farther-chats])
+  [data-testid="sidebar-row-slim"]
+  :is(a, button)
+  > span.contents
+  > span {
+  display: none;
+}
+
+/*
+ * Lists that scroll on their own: the scrollbar shows only while the pointer is
+ * over the list, and an edge fades wherever more rows sit beyond it. The fades
+ * follow the scroll position (no timer), and a list that fits has neither.
+ */
+@property --farther-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --farther-fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes farther-scroll-fade {
+  0% {
+    --farther-fade-top: 0px;
+    --farther-fade-bottom: 28px;
+  }
+  8% {
+    --farther-fade-top: 28px;
+  }
+  92% {
+    --farther-fade-bottom: 28px;
+  }
+  100% {
+    --farther-fade-top: 28px;
+    --farther-fade-bottom: 0px;
+  }
+}
+
+[data-farther-scroll] {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 var(--farther-fade-top),
+    #000 calc(100% - var(--farther-fade-bottom)),
+    transparent
+  );
+  animation: farther-scroll-fade linear both;
+  animation-timeline: scroll(self);
+}
+
+[data-farther-scroll]:hover {
+  scrollbar-color: color-mix(in srgb, var(--foreground) 18%, transparent) transparent;
+}
