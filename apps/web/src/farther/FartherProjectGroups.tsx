@@ -1,6 +1,9 @@
 import { ChevronDownIcon, ChevronRightIcon, FolderIcon, PlusIcon } from "lucide-react";
 import { createContext, useContext, useState, type ReactNode } from "react";
 
+import { useScratchProject } from "~/hooks/useScratchProject";
+import { usePrimaryEnvironmentId } from "~/state/environments";
+
 import type { FartherSidebarGroups } from "./projectGroups";
 
 const COLLAPSED_PROJECTS_STORAGE_KEY = "farther:sidebar:collapsed-projects";
@@ -63,24 +66,22 @@ export function renderFartherProjectGroups<Thread>(input: {
   const { groups, collapsed, onToggleProject, onAddProject, onFolderContextMenu, renderRow } =
     input;
   const items: ReactNode[] = [];
-  if (groups.projects.length > 0) {
-    items.push(
-      <SectionLabel
-        key="farther-projects-label"
-        label="Projects"
-        action={
-          <button
-            type="button"
-            aria-label="Add project"
-            onClick={onAddProject}
-            className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
-          >
-            <PlusIcon className="size-3.5" />
-          </button>
-        }
-      />,
-    );
-  }
+  items.push(
+    <SectionLabel
+      key="farther-projects-label"
+      label="Projects"
+      action={
+        <button
+          type="button"
+          aria-label="Add project"
+          onClick={onAddProject}
+          className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
+        >
+          <PlusIcon className="size-3.5" />
+        </button>
+      }
+    />,
+  );
   for (const group of groups.projects) {
     const isCollapsed = collapsed.has(group.key);
     items.push(
@@ -117,8 +118,10 @@ export function renderFartherProjectGroups<Thread>(input: {
       </li>,
     );
   }
+  items.push(
+    <SectionLabel key="farther-chats-label" label="Chats" action={<FartherNewChatButton />} />,
+  );
   if (groups.chats.length > 0) {
-    items.push(<SectionLabel key="farther-chats-label" label="Chats" />);
     items.push(
       <li key="farther-chats" className="list-none">
         <ul role="presentation" data-farther-chats="" className="flex flex-col gap-px">
@@ -130,6 +133,23 @@ export function renderFartherProjectGroups<Thread>(input: {
     );
   }
   return items;
+}
+
+function FartherNewChatButton() {
+  const primaryEnvironmentId = usePrimaryEnvironmentId();
+  const { scratchEnvironmentId, startScratchThread } = useScratchProject();
+  const environmentId = scratchEnvironmentId(primaryEnvironmentId);
+  if (environmentId === null) return null;
+  return (
+    <button
+      type="button"
+      aria-label="New chat"
+      onClick={() => void startScratchThread(environmentId)}
+      className="flex size-5 cursor-pointer items-center justify-center rounded text-sidebar-muted-foreground hover:bg-sidebar-row-hover hover:text-sidebar-foreground"
+    >
+      <PlusIcon className="size-3.5" />
+    </button>
+  );
 }
 
 export function FartherStatusMarker({

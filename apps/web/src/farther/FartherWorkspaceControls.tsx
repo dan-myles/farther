@@ -129,7 +129,7 @@ export function FartherWorkspaceSwitcher() {
             />
           }
         >
-          <span className="truncate font-farther-mono text-[17px] leading-[22px] tracking-[-0.04em]">
+          <span className="truncate text-[15px] leading-[22px] font-medium tracking-[-0.01em]">
             {active.name}
           </span>
           <ChevronDownIcon aria-hidden className="size-3 shrink-0 text-sidebar-muted-foreground" />
