@@ -1833,6 +1833,7 @@ export default function GitActionsControl({
 
       {isPanel && isRepo ? (
         <ThreadDetailsControl
+          data-farther-env-legacy-changes=""
           type="button"
           variant="ghost"
           size="sm"

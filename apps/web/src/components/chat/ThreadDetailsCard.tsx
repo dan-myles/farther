@@ -6,11 +6,11 @@ import { Popover, PopoverPopup, PopoverCreateHandle } from "../ui/popover";
 import { selectThreadPanelOpen, useRightPanelStore } from "../../rightPanelStore";
 import type { ThreadPanelPresentation } from "../../rightPanelLayout";
 import { useChatCanvas } from "./ChatCanvasContext";
+import { THREAD_DETAILS_CARD_GAP } from "./threadDetailsCardLayout";
 import {
-  THREAD_DETAILS_CARD_GAP,
-  resolveThreadDetailsCardDensity,
-  resolveThreadDetailsCardLayout,
-} from "./threadDetailsCardLayout";
+  resolveFartherEnvironmentPanelDensity as resolveThreadDetailsCardDensity,
+  resolveFartherEnvironmentPanelLayout as resolveThreadDetailsCardLayout,
+} from "../../farther/environmentPanelLayout";
 import { observeResize } from "../../lib/observeResize";
 
 export function ThreadDetailsCard({
@@ -70,7 +70,7 @@ export function ThreadDetailsCard({
     : undefined;
   const cardBottom =
     preferredPlacement && measurements.key === measurementKey && measurements.fullContentHeight > 0
-      ? preferredPlacement.y + Math.min(measurements.fullContentHeight, preferredPlacement.height)
+      ? preferredPlacement.y + preferredPlacement.height
       : undefined;
   useLayoutEffect(() => {
     reportDetailsCard?.(
@@ -124,6 +124,7 @@ export function ThreadDetailsCard({
       )}
       style={placement ? { maxHeight: height } : undefined}
       data-thread-details-card
+      data-farther-env-card=""
     >
       <ScrollArea scrollFade className="min-h-0">
         <div ref={setContentElement}>{children(density)}</div>

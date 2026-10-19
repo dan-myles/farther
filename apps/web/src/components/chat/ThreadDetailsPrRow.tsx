@@ -1,4 +1,5 @@
 import { ThreadDetailsControl } from "./ThreadDetailsControl";
+import { FartherPrStatus } from "../../farther/FartherEnvironmentDetails";
 import { PullRequestGlyph } from "../pullRequest/pullRequestIcons";
 import { selectEnvironmentQueryData } from "@t3tools/client-runtime/state/runtime";
 import type { EnvironmentProject } from "@t3tools/client-runtime/state/shell";
@@ -396,6 +397,7 @@ export function ThreadDetailsPrRow({
         <span className={cn("min-w-0 flex-1 truncate text-left", THREAD_DETAILS_PANEL_LABEL_CLASS)}>
           {text}
         </span>
+        <FartherPrStatus detail={detail} />
       </TooltipTrigger>
       {rowTooltip}
     </Tooltip>
@@ -407,7 +409,7 @@ export function ThreadDetailsPrRow({
     <>
       {detail !== null && (showChecks || trailingAction !== null || watching) ? (
         <div className="pb-2">
-          {openRow(detail.title, "row")}
+          {openRow(`#${number} ${detail.title}`, "row")}
           <div className="-mt-1 flex h-6 min-w-0 items-center gap-0.5 ps-9 pe-1 text-xs text-muted-foreground">
             <span className="me-1 shrink-0 tabular-nums">#{number}</span>
             {showChecks && checksRollup !== null ? (

@@ -1,4 +1,5 @@
 import { ThreadDetailsControl } from "./chat/ThreadDetailsControl";
+import { FartherScriptLabel } from "../farther/FartherEnvironmentDetails";
 import {
   AuthSettingsWriteScope,
   type EnvironmentId,
@@ -310,7 +311,7 @@ export default function ProjectScriptsControl({
                   isPanel && cn("not-sr-only ml-0 truncate", THREAD_DETAILS_PANEL_LABEL_CLASS),
                 )}
               >
-                {primaryScript.name}
+                {isPanel ? <FartherScriptLabel name={primaryScript.name} /> : primaryScript.name}
               </span>
             </TooltipTrigger>
             <TooltipPopup side="top">

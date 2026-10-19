@@ -45,6 +45,7 @@ import { BranchToolbarEnvironmentSelector } from "./BranchToolbarEnvironmentSele
 import { BranchToolbarEnvModeSelector } from "./BranchToolbarEnvModeSelector";
 import { PreviousWorktreeItemContent } from "./PreviousWorktreeItemContent";
 import { ThreadDetailsControl } from "./chat/ThreadDetailsControl";
+import { FartherWorkspaceMeta } from "../farther/FartherEnvironmentDetails";
 import {
   THREAD_DETAILS_PANEL_ICON_CLASS,
   THREAD_DETAILS_PANEL_LOCKED_ROW_CLASS,
@@ -252,6 +253,13 @@ const RunContextSelector = memo(function RunContextSelector({
   const triggerContent = (
     <>
       {icon}
+      {isPanel ? (
+        <FartherWorkspaceMeta
+          environmentId={environmentId}
+          mode={effectiveEnvMode}
+          autoLabel={autoEnvironmentLabel}
+        />
+      ) : null}
       <ComposerContextLabel displayMode={displayMode}>
         {autoEnvironmentLabel ??
           (showEnvironmentIndicator ? (activeEnvironment?.label ?? "Run on") : workspaceLabel)}

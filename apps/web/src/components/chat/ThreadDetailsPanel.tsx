@@ -21,6 +21,7 @@ import { OpenInPicker } from "./OpenInPicker";
 import { ThreadDetailsSection } from "./ThreadDetailsSection";
 import { ThreadAutomationsPanel } from "./ThreadAutomationsPanel";
 import { ThreadRelationshipsPanel } from "./ThreadRelationshipsControl";
+import { FartherChangesRow, FartherTerminalRow } from "../../farther/FartherEnvironmentDetails";
 
 const GitActionsControl = memo(BaseGitActionsControl);
 
@@ -54,6 +55,7 @@ export interface ThreadDetailsPanelProps extends Pick<
   onCheckoutPullRequestRequest?: (reference: string) => void;
   onComposerFocusRequest: () => void;
   onOpenChanges?: () => void;
+  onToggleTerminal?: () => void;
   onRunProjectScript: (script: ProjectScript) => void;
   onAddProjectScript: (input: NewProjectScriptInput) => Promise<ProjectScriptActionResult>;
   onUpdateProjectScript: (
@@ -143,6 +145,7 @@ export function ThreadDetailsPanel(props: ThreadDetailsPanelProps) {
                   onDeleteScript={props.onDeleteProjectScript}
                 />
               ) : null}
+              <FartherTerminalRow props={props} />
             </div>
           </ThreadDetailsSection>
 
@@ -154,6 +157,7 @@ export function ThreadDetailsPanel(props: ThreadDetailsPanelProps) {
               separated={density === "full"}
             >
               <div className="flex flex-col">
+                <FartherChangesRow props={props} />
                 {props.isGitRepo ? (
                   <BranchToolbar layout="panel" panelSection="branch" {...branchToolbarProps} />
                 ) : null}

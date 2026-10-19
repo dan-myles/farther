@@ -1,4 +1,5 @@
 import { ThreadDetailsControl } from "./ThreadDetailsControl";
+import { FartherEditorHint } from "../../farther/FartherEnvironmentDetails";
 import {
   AuthOrchestrationOperateScope,
   buildRemoteOpenUrl,
@@ -423,6 +424,7 @@ export const OpenInPicker = memo(function OpenInPicker({
         >
           {primaryLabel}
         </span>
+        {isPanel ? <FartherEditorHint keybindings={keybindings} /> : null}
       </ThreadDetailsControl>
       {isPanel ? (
         <span aria-hidden="true" className={THREAD_DETAILS_PANEL_SPLIT_SEPARATOR_CLASS} />

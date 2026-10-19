@@ -8436,6 +8436,7 @@ export default function ChatView(props: ChatViewProps) {
             />
 
             <ThreadDetailsPanel
+              onToggleTerminal={toggleTerminalVisibilityStable}
               anchor={threadPanelPopoverAnchorRef}
               handle={threadPanelPopoverHandle}
               onPresentationChange={setThreadPanelPresentation}

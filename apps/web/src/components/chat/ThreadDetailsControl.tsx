@@ -43,6 +43,7 @@ export function ThreadDetailsControl({
 }) {
   const control = useRender({
     defaultTagName: "button",
+    state: { "farther-env-control": part },
     render,
     props: mergeProps<"button">(
       {

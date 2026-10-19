@@ -1,4 +1,5 @@
 import { ThreadDetailsControl } from "./chat/ThreadDetailsControl";
+import { FartherBaseBranch } from "../farther/FartherEnvironmentDetails";
 import { ComposerContextLabel } from "./ComposerContextLabel";
 import { useSupportsMultiplePullRequests } from "~/hooks/useSupportsMultiplePullRequests";
 import { resolveThreadCurrentPullRequestLink } from "@t3tools/shared/threadPullRequests";
@@ -730,6 +731,7 @@ export function BranchToolbarBranchSelector({
                 className="w-full"
               />
             </ComposerContextLabel>
+            {displayMode === "panel" ? <FartherBaseBranch status={branchStatusQuery.data} /> : null}
             {displayMode !== "panel" ? (
               <ChevronDownIcon className="size-3 shrink-0 opacity-50" />
             ) : null}
