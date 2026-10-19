@@ -89,6 +89,7 @@
   gap: 4px;
   /* Same inset as the list's section labels and their + buttons below. */
   padding-inline: 18px;
+  padding-top: 6px;
 }
 
 [data-farther-sidebar] :has(> [data-farther-workspace-switcher]) > div:last-child button {

@@ -150,29 +150,28 @@ export function ThreadDetailsCard({
       }}
     >
       {placement ? (
-        inlineOpen ? (
-          <aside
-            aria-label="Thread details"
-            // Slides down to make room for the find bar, but returns in the same frame
-            // the bar closes: a floating preview below moves up at once and would
-            // otherwise overlap the card mid-slide.
-            className={cn(
-              "absolute z-20",
-              topInset > 0 &&
-                "transition-[top] duration-150 ease-out motion-reduce:transition-none",
-            )}
-            style={{
-              right: placement.right,
-              top: placement.y,
-              width: placement.width,
-              maxHeight: height,
-            }}
-            data-density={density}
-            data-thread-details-panel="inline"
-          >
-            {card}
-          </aside>
-        ) : null
+        <aside
+          aria-label="Thread details"
+          // Slides down to make room for the find bar, but returns in the same frame
+          // the bar closes: a floating preview below moves up at once and would
+          // otherwise overlap the card mid-slide.
+          className={cn(
+            "absolute z-20",
+            topInset > 0 && "transition-[top] duration-150 ease-out motion-reduce:transition-none",
+          )}
+          style={{
+            right: placement.right,
+            top: placement.y,
+            width: placement.width,
+            maxHeight: height,
+          }}
+          data-density={density}
+          data-thread-details-panel="inline"
+          data-farther-open={inlineOpen ? "" : undefined}
+          inert={!inlineOpen}
+        >
+          {card}
+        </aside>
       ) : (
         <PopoverPopup
           anchor={anchor}

@@ -51,22 +51,16 @@
   scale: 0.97;
 }
 
-/* Sidebar: hover fills fade in, presses give a little. */
+/* Sidebar: hover fills fade in. Presses stay still, including upstream's button squeeze. */
 [data-farther-sidebar] :is(button, [role="button"], a) {
   transition:
     background-color 120ms ease-out,
     color 120ms ease-out,
-    opacity 120ms ease-out,
-    scale 100ms ease-out;
+    opacity 120ms ease-out;
 }
 
-[data-farther-sidebar]
-  :is(
-    [data-farther-rail-button],
-    [data-farther-project-row],
-    [data-farther-workspace-switcher]
-  ):active:not([aria-disabled="true"]) {
-  scale: 0.97;
+[data-farther-sidebar] :is(button, [role="button"], a):active {
+  scale: none;
 }
 
 /* The workspace switcher's chevron turns while its menu is open. */
@@ -76,6 +70,30 @@
 
 [data-farther-workspace-switcher][data-popup-open] svg {
   rotate: 180deg;
+}
+
+/*
+ * The docked environment panel stays mounted while closed (inert, hidden) so it
+ * can slide out as well as in.
+ */
+[data-thread-details-panel="inline"] {
+  transition:
+    opacity 180ms ease-out,
+    translate 220ms var(--farther-pop-ease),
+    top 150ms ease-out,
+    visibility 0s linear 0s;
+}
+
+[data-thread-details-panel="inline"]:not([data-farther-open]) {
+  opacity: 0;
+  translate: 12px 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 140ms ease-in,
+    translate 160ms ease-in,
+    top 150ms ease-out,
+    visibility 0s linear 160ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -89,7 +107,8 @@
     [data-slot="alert-dialog-popup"]
   ),
   [data-farther-sidebar] :is(button, [role="button"], a),
-  [data-farther-workspace-switcher] svg {
+  [data-farther-workspace-switcher] svg,
+  [data-thread-details-panel="inline"] {
     transition: none;
   }
 }
