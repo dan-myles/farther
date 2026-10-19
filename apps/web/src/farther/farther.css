@@ -196,8 +196,7 @@
 
 /*
  * Lists that scroll on their own: the scrollbar shows only while the pointer is
- * over the list, and an edge fades wherever more rows sit beyond it. The fades
- * follow the scroll position (no timer), and a list that fits has neither.
+ * over the list, and an edge fades only while more rows sit beyond it.
  */
 @property --farther-fade-top {
   syntax: "<length>";
@@ -211,23 +210,6 @@
   initial-value: 0px;
 }
 
-@keyframes farther-scroll-fade {
-  0% {
-    --farther-fade-top: 0px;
-    --farther-fade-bottom: 28px;
-  }
-  8% {
-    --farther-fade-top: 28px;
-  }
-  92% {
-    --farther-fade-bottom: 28px;
-  }
-  100% {
-    --farther-fade-top: 28px;
-    --farther-fade-bottom: 0px;
-  }
-}
-
 [data-farther-scroll] {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -238,8 +220,17 @@
     #000 calc(100% - var(--farther-fade-bottom)),
     transparent
   );
-  animation: farther-scroll-fade linear both;
-  animation-timeline: scroll(self);
+  transition:
+    --farther-fade-top 160ms ease-out,
+    --farther-fade-bottom 160ms ease-out;
+}
+
+[data-farther-scroll][data-more-above] {
+  --farther-fade-top: 28px;
+}
+
+[data-farther-scroll][data-more-below] {
+  --farther-fade-bottom: 28px;
 }
 
 [data-farther-scroll]:hover {

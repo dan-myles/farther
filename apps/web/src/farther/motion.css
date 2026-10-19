@@ -108,6 +108,7 @@
   ),
   [data-farther-sidebar] :is(button, [role="button"], a),
   [data-farther-workspace-switcher] svg,
+  [data-farther-scroll],
   [data-thread-details-panel="inline"] {
     transition: none;
   }

@@ -32,6 +32,38 @@ export function fartherThreadOrder(thread: EnvironmentThreadShell) {
   return { rank, activity: firstValidTimestampMs(thread.updatedAt, thread.createdAt) };
 }
 
+/**
+ * Marks which edges of a scrolling list have rows beyond them, for the CSS fades.
+ * Scroll-driven animations would do this without script, but Firefox and Safari
+ * don't ship them. Rows are watched too: a folder opening grows the content
+ * without resizing the capped list.
+ */
+function trackScrollEdges(list: HTMLElement | null) {
+  if (!list) return;
+  const update = () => {
+    list.toggleAttribute("data-more-above", list.scrollTop > 1);
+    list.toggleAttribute(
+      "data-more-below",
+      list.scrollTop + list.clientHeight < list.scrollHeight - 1,
+    );
+  };
+  const resize = new ResizeObserver(update);
+  const observeRows = () => {
+    resize.disconnect();
+    resize.observe(list);
+    for (const row of list.children) resize.observe(row);
+  };
+  const mutations = new MutationObserver(observeRows);
+  observeRows();
+  mutations.observe(list, { childList: true });
+  list.addEventListener("scroll", update, { passive: true });
+  return () => {
+    resize.disconnect();
+    mutations.disconnect();
+    list.removeEventListener("scroll", update);
+  };
+}
+
 function readCollapsedProjects(): ReadonlySet<string> {
   try {
     const raw = localStorage.getItem(COLLAPSED_PROJECTS_STORAGE_KEY);
@@ -156,6 +188,7 @@ export function renderFartherProjectGroups<Thread>(input: {
     <li key="farther-projects" className="list-none">
       <ul
         role="presentation"
+        ref={trackScrollEdges}
         data-farther-projects-scroll=""
         data-farther-scroll=""
         className="flex max-h-[50dvh] flex-col overflow-y-auto overscroll-contain"
@@ -172,6 +205,7 @@ export function renderFartherProjectGroups<Thread>(input: {
       <li key="farther-chats" className="list-none">
         <ul
           role="presentation"
+          ref={trackScrollEdges}
           data-farther-chats=""
           data-farther-scroll=""
           className="flex max-h-[24dvh] flex-col gap-px overflow-y-auto overscroll-contain"
