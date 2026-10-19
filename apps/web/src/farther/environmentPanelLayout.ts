@@ -7,6 +7,9 @@ import type {
 export const FARTHER_ENVIRONMENT_PANEL_DEFAULT_WIDTH = 320;
 export const FARTHER_ENVIRONMENT_PANEL_MAX_WIDTH = 560;
 export const FARTHER_ENVIRONMENT_PANEL_WIDTH_STORAGE_KEY = "farther:environment-panel-width";
+// A widened panel may squeeze the chat below upstream's lane minimum, to a
+// still-comfortable reading width; the default width keeps upstream's rule.
+const FARTHER_WIDENED_PANEL_MIN_CHAT_WIDTH = 480;
 
 type PanelLayoutInput = Parameters<typeof resolveThreadDetailsCardLayout>[0];
 
@@ -27,9 +30,13 @@ export function fitFartherEnvironmentPanelWidth(
         Math.max(FARTHER_ENVIRONMENT_PANEL_DEFAULT_WIDTH, preferredWidth),
       )
     : FARTHER_ENVIRONMENT_PANEL_DEFAULT_WIDTH;
-  const room = container.width - DETAILS_CARD_CLEARANCE - lane.padding - lane.minChatWidth;
-  const width = Math.min(preferred, room);
-  return width >= FARTHER_ENVIRONMENT_PANEL_DEFAULT_WIDTH ? width : null;
+  const roomFor = (minChatWidth: number) =>
+    container.width - DETAILS_CARD_CLEARANCE - lane.padding - minChatWidth;
+  if (roomFor(lane.minChatWidth) < FARTHER_ENVIRONMENT_PANEL_DEFAULT_WIDTH) return null;
+  return Math.max(
+    FARTHER_ENVIRONMENT_PANEL_DEFAULT_WIDTH,
+    Math.min(preferred, roomFor(Math.min(lane.minChatWidth, FARTHER_WIDENED_PANEL_MIN_CHAT_WIDTH))),
+  );
 }
 
 export function resolveFartherEnvironmentPanelLayout({

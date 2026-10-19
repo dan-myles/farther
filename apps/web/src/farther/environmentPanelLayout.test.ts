@@ -59,14 +59,16 @@ describe("farther environment panel", () => {
     expect(fitFartherEnvironmentPanelWidth(Number.NaN, { container, lane })).toBe(320);
   });
 
-  it("narrows a stored width that would crowd the chat lane, then pops over", () => {
-    const container = { width: 1120, height: 852 };
-    const panel = resolveFartherEnvironmentPanelLayout({
-      container,
-      lane,
-      frame: null,
-      preferredWidth: 560,
-    })!;
+  it("widens until the chat is at its reading minimum, and pops over where even the default crowds it", () => {
+    const fit = (width: number) =>
+      resolveFartherEnvironmentPanelLayout({
+        container: { width, height: 852 },
+        lane,
+        frame: null,
+        preferredWidth: 560,
+      });
+    const container = { width: 1060, height: 852 };
+    const panel = fit(container.width)!;
     const { chat } = resolveChatCanvasLayout({
       container,
       preview: null,
@@ -74,16 +76,10 @@ describe("farther environment panel", () => {
       dockedDetailsCard: true,
     });
 
-    expect(panel.width).toBe(400);
+    expect(fit(1440)!.width).toBe(560);
+    expect(panel.width).toBe(500);
     expect(panel.x + panel.width).toBe(container.width);
-    expect(chat.width).toBeGreaterThanOrEqual(lane.minChatWidth);
-    expect(
-      resolveFartherEnvironmentPanelLayout({
-        container: { width: 1000, height: 852 },
-        lane,
-        frame: null,
-        preferredWidth: 560,
-      }),
-    ).toBeNull();
+    expect(chat.width).toBeGreaterThanOrEqual(480);
+    expect(fit(1000)).toBeNull();
   });
 });

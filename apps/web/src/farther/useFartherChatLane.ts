@@ -14,6 +14,7 @@ interface ChatLane {
 const LANE_TARGETS =
   ".messages-timeline-scroll > *, [data-chat-composer-stack], .chat-banner-lane, .chat-scroll-to-bottom";
 const LANE_ANIMATION_ID = "farther-chat-lane";
+const LANE_TOGGLE_WINDOW_MS = 300;
 
 type PanelState = "open" | "closed" | "none";
 
@@ -51,6 +52,7 @@ export function useFartherChatLane(
   }, [canvasRef]);
 
   const settled = useRef<{ center: number; panel: PanelState } | null>(null);
+  const toggledAt = useRef(Number.NEGATIVE_INFINITY);
   const center = chat.left + chat.width / 2;
   // Runs every commit so the panel state never goes stale between lane moves.
   useLayoutEffect(() => {
@@ -59,13 +61,16 @@ export function useFartherChatLane(
     const panel = readPanelState(canvas);
     const previous = settled.current;
     settled.current = { center, panel };
+    if (previous && previous.panel !== "none" && panel !== "none" && previous.panel !== panel) {
+      toggledAt.current = performance.now();
+    }
     // Only an open/close toggle animates. Window resizes, drags, previews, and the
-    // dock giving way to the popover all move the lane in place.
+    // dock giving way to the popover all move the lane in place. The toggle and the
+    // lane's new position land in separate commits (the panel reports its edge from
+    // an effect), so a toggle arms the slide for the lane move that follows it.
     if (
       !previous ||
-      previous.panel === "none" ||
-      panel === "none" ||
-      previous.panel === panel ||
+      performance.now() - toggledAt.current > LANE_TOGGLE_WINDOW_MS ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
       return;
