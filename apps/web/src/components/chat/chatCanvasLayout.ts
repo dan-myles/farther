@@ -30,6 +30,7 @@ export function resolveChatCanvasLayout({
   composerHeight = 0,
   detailsCard = null,
   findBar = null,
+  dockedDetailsCard = false,
 }: {
   container: PreviewMiniPlayerSize;
   preview: ChatCanvasPreview | null;
@@ -39,6 +40,8 @@ export function resolveChatCanvasLayout({
   composerHeight?: number;
   detailsCard?: PreviewMiniPlayerObstacles["detailsCard"];
   findBar?: PreviewMiniPlayerObstacles["detailsCard"];
+  // A docked card owns its column, so the chat centers in the lane beside it.
+  dockedDetailsCard?: boolean;
 }) {
   const centeredWidth = Math.max(0, Math.min(maxChatWidth, container.width - padding * 2));
   const laneRight = detailsCard
@@ -47,7 +50,9 @@ export function resolveChatCanvasLayout({
   const normalWidth = Math.max(0, Math.min(centeredWidth, laneRight - padding));
   const normalLeft = Math.max(
     padding,
-    Math.min((container.width - normalWidth) / 2, laneRight - normalWidth),
+    dockedDetailsCard
+      ? (laneRight + padding - normalWidth) / 2
+      : Math.min((container.width - normalWidth) / 2, laneRight - normalWidth),
   );
   let chat = {
     left: normalLeft,

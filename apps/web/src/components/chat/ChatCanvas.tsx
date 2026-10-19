@@ -111,6 +111,7 @@ export function ChatCanvas({
       preview,
       detailsCard,
       findBar,
+      dockedDetailsCard: true,
     }),
     previewKey: preview?.key ?? null,
     reportPreview,

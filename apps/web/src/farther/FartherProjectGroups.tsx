@@ -83,9 +83,10 @@ export function renderFartherProjectGroups<Thread>(input: {
       }
     />,
   );
+  const folders: ReactNode[] = [];
   for (const group of groups.projects) {
     const isCollapsed = collapsed.has(group.key);
-    items.push(
+    folders.push(
       <li key={`farther-project:${group.key}`} className="list-none">
         <button
           type="button"
@@ -134,6 +135,18 @@ export function renderFartherProjectGroups<Thread>(input: {
       </li>,
     );
   }
+  // Projects scroll on their own so Chats stays in view under a long list.
+  items.push(
+    <li key="farther-projects" className="list-none">
+      <ul
+        role="presentation"
+        data-farther-projects-scroll=""
+        className="flex max-h-[55dvh] flex-col overflow-y-auto overscroll-contain"
+      >
+        {folders}
+      </ul>
+    </li>,
+  );
   items.push(
     <SectionLabel key="farther-chats-label" label="Chats" action={<FartherNewChatButton />} />,
   );
